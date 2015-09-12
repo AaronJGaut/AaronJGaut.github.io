@@ -1,0 +1,13 @@
+{
+       "class" : "enemy",
+       "width" : 10,
+       "height" : 7,
+       "spriteCoords" : {
+                "standcenter" : [
+                        {
+                                "coord" : { "x":0, "y":0 },
+                                "time" : 1e9999
+                        }
+                ]
+       }
+}

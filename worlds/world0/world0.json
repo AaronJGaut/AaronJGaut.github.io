@@ -1,0 +1,51 @@
+{
+        "background" : "cave",
+        "tilesheet" : "cave",
+        
+        "rooms" : ["0", "1", "2"],
+        
+        "entrances" : {
+                "initial" : {
+                        "room" : "0",
+                        "zone" : "initial"
+                }
+        },
+        
+        "exits" : {
+        },
+        
+        "connections" : {
+                "0,westExit0" : {
+                        "room" : "2",
+                        "zone" : "eastEnter0"
+                },
+                "0,eastExit0" : {
+                        "room" : "1",
+                        "zone" : "westEnter0"
+                },
+                "0,eastExit1" : {
+                        "room" : "1",
+                        "zone" : "westEnter1"
+                },
+                "1,westExit0" : {
+                        "room" : "0",
+                        "zone" : "eastEnter0"
+                },
+                "1,westExit1" : {
+                        "room" : "0",
+                        "zone" : "eastEnter1"
+                },
+                "1,eastExit0" : {
+                        "room" : "2",
+                        "zone" : "westEnter0"
+                },
+                "2,westExit0" : {
+                        "room" : "1",
+                        "zone" : "eastEnter0"
+                },
+                "2,eastExit0" : {
+                        "room" : "0",
+                        "zone" : "westEnter0"
+                }
+        }
+}

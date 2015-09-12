@@ -1,0 +1,7 @@
+{
+        "STARTING_WORLD_ID" : "0",
+        "STARTING_ENTRANCE_ID" : "initial",
+        "TILE_SIZE" : 10,
+        "CAMERA_WIDTH" : 20,
+        "CAMERA_HEIGHT" : 15
+}
