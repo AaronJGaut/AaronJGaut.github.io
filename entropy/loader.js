@@ -13,60 +13,24 @@ loadingCount = 0;
 var readyState = "uninitialized";
 var entityAttributes = {};
 var entitySprites = {};
-
-var dicts = {};
 var backgrounds = {};
 var tilesheets = {};
-var entities;
+
+//Stores the camera prototype after getting info from the constants dictionary
 var camera;
 
-var worldInfo = {};
-/*
-Info format:
-* indicates a dictionary w/ arbitrary keys
-~ indicates an array
+//Stores all entity prototypes after getting info from the constants dictionary and entities folder
+var entities;
 
-worldInfo
-| worldIds*
-| | themeId
-| | entranceId*
-| | | roomId
-| | | boxId
-| | exits*
-| | | roomId
-| | | exitId
-| | | worldId
-| | | entranceId
-| | (fromRoomId, exitBoxId)*
-| | | toRoomId
-| | | entranceBoxId
-| | rooms
-| | | roomId*
-| | | | entitiesIds*
-| | | | | type
-| | | | | pos
-| | | | | | x
-| | | | | | y
-| | | | boxIds*
-| | | | | rect
-| | | | | | blx
-| | | | | | bly
-| | | | | | trx
-| | | | | | try
-*/
+//Stores info from the dictionaries folder
+var dicts = {};
+
+//Stores info from the worlds, backgrounds, and tilesheets folders
+var worldInfo = {};
 
 function Coord(x, y) {
         this.x = x;
         this.y = y;
-}
-
-function dictKeys(dict) {
-        /* Returns the keys of a dictionary as an array. */
-        keyArray = [];
-        for (key in dict) {
-                keyArray.push(key);
-        }
-        return keyArray;
 }
 
 function dictValues(dict) {
@@ -101,7 +65,8 @@ function getTextFile() {
 
         function handleStateChange() {
                 if (xhr.readyState === 4) {
-                        var text = xhr.status == 200 ? xhr.responseText : null;
+			//calls with null if something went wrong
+			var text = xhr.status == 200 ? xhr.responseText : null;
                         callback.apply(this, [text].concat(args));
                         gettingFile = false;
                 }
@@ -112,13 +77,16 @@ function LineReader(text){
 	/* Reads the input text one line at a time.
 	 * 
 	 * Methods/Fields:
-	 * 	hasNext() - returns true if end
+	 * 	hasNext - returns true if end
 	 * 		of file has been reached,
 	 * 		false otherwise.
 	 * 	read() - outputs the next line from
 	 * 		the input text. Throws "EOF"
 	 * 		if called after end of file
 	 * 		is reached.
+	 * 	readTokens() - same as read, but the
+	 * 		line is split by whitespace
+	 * 		into an array of strings.
 	 *
 	 * LineReader also has a few quirks/features:
 	 * 	-Trims whitespace from beginning and end
@@ -171,12 +139,20 @@ function LineReader(text){
 			throw "EOF";
 		}
 	};
-    
+   
+	this.readTokens = function() {
+		return this.read().split(" ");
+	};
+
 	this.prepareNext();
 }
     
 function pixelToHex(data){
-        var num = data[0]*0x10000 + data[1]*0x100 + data[2];
+	/* Converts an array representing a 24 or 
+	 * 32 bit pixel to a hex string of the form:
+	 *   0xNNNNNN
+	 */ 
+	var num = data[0]*0x10000 + data[1]*0x100 + data[2];
         num = num.toString(16);
         while(num.length < 6) {
                 num = "0" + num;
@@ -185,15 +161,23 @@ function pixelToHex(data){
 }
 
 function load() {
+	/* loadingCount is incremented each time a new file needs
+	 * to be loaded, and is decremented when a file has been
+	 * full parsed. When loadingCount returns to zero, readyState
+	 * is set to the next value. Multiple readyStates are used
+	 * for loading because there are some dependencies.
+	 */
 
         readyState = "loading1";
         loadingCount+=5;
-        getTextFile("worlds/worlds.txt", loadWorlds);
+        
+	getTextFile("worlds/worlds.txt", loadWorlds);
         getTextFile("dictionaries/dictionaries.txt", loadDictionaries);
         getTextFile("backgrounds/backgrounds.txt", loadBackgrounds);
         getTextFile("tilesheets/tilesheets.txt", loadTilesheets);
         getTextFile("entities/entities.txt", loadAllEntityAttributes);
-        var loadTextReadyCheck = setInterval(function() {
+        
+	var loadTextReadyCheck = setInterval(function() {
                 if (readyState === "loading1" && loadingCount === 0) {
                         clearInterval(loadTextReadyCheck);
                         loadRoomTiles();
@@ -212,7 +196,7 @@ function load() {
 
 function loadWorlds(text) {
         var reader = new LineReader(text);
-        var worldIds = reader.read().split(" ");
+        var worldIds = reader.readTokens();
         loadingCount += worldIds.length;
         for (var i = 0; i < worldIds.length; i++) {
                 getTextFile("worlds/world" + worldIds[i] + "/world" + worldIds[i] + ".json", loadWorldFromText, worldIds[i]);
@@ -308,7 +292,21 @@ function loadTilesFromImage(sourceImage, roomObj) {
 }
 
 function getDrawCoords(tiles) {
-        needsTiling = {
+	/* Handles tiling. Tiles that need to be tiled must belong to the
+	 * needsTiling dict. They will try to line up with all tiles in the
+	 * tileTo dict. Tiling is determined by looking at a tile's surroundings
+	 * and appending characters to its type id accordingly. For the 4 cardinal
+	 * directions, n s e and w are used to indicate absence of a tile
+	 * to line up with in that direction. For diagonals, 1 3 7 and 9 are used
+	 * for nw ne sw and se respectively. These characters are always appended in
+	 * the order nsew1379. Once everything has the corrected type id, the dict
+	 * tileIdToCoord is used to convert to coordinates in a tilesheet.
+	 * Every tilesheet should use the same coordinates for corresponding tiles.
+	 * An array of these coordinates is finally returned.
+	 */
+
+	//Todo: move these dicts to external JSON files in the dictionaries folder
+	needsTiling = {
                 "wall" : true
         };
         tileTo = {
@@ -377,6 +375,11 @@ function getDrawCoords(tiles) {
 }
 
 function getTileBoxes(tiles) {
+	/* Used to make collision detection for tiles slightly
+	 * more efficient. May be unneccessary or detrimental once
+	 * quadtree is in use.
+	 */
+
         var isImpassible = {
                 "wall" : true
         }
@@ -437,7 +440,7 @@ function getTileBoxes(tiles) {
 
 function loadDictionaries(text) {
         var reader = new LineReader(text);
-        var dictIds = reader.read().split(" ");
+        var dictIds = reader.readTokens();
         loadingCount += dictIds.length;
         for (var i = 0; i < dictIds.length; i++) {
                 getTextFile("dictionaries/" + dictIds[i] + ".json", loadDictFromText, dictIds[i]);
@@ -459,7 +462,7 @@ function loadDictFromText(text, dictId) {
 
 function loadBackgrounds(text) {
         var reader = new LineReader(text);
-        var tks = reader.read().split(" ");
+        var tks = reader.readTokens();
         loadingCount += tks.length;
         
         for (var i = 0; i < tks.length; i++) {
@@ -476,7 +479,7 @@ function loadBackgrounds(text) {
 
 function loadTilesheets(text) {
         var reader = new LineReader(text);
-        var tks = reader.read().split(" ");
+        var tks = reader.readTokens();
         loadingCount += tks.length;
 
         for (var i = 0; i < tks.length; i++) {
@@ -493,7 +496,7 @@ function loadTilesheets(text) {
 
 function loadAllEntityAttributes(text) {
         var reader = new LineReader(text);
-        var tks = reader.read().split(" ");
+        var tks = reader.readTokens();
         
         loadingCount += tks.length*2;
 
@@ -524,6 +527,14 @@ function loadEntityAttributes(text, entityId) {
 }
 
 function linkObjects() {
+	/* Where ids are used as dict values, such
+	 * as in entrances and tilesheets, this function
+	 * replaces the ids with direct references to the
+	 * corresponding objects.
+	 *
+	 * Also prepares the entity and camera prototypes
+	 */
+
         //linking world entrances, exits, and connections
         for (worldId in worldInfo) {
 
@@ -567,12 +578,14 @@ function linkObjects() {
 }
 
 function startGame() {
-        var info = {
+	var info = {
                 "worlds" : worldInfo,
                 "dicts" : dicts,
                 "entities" : entities,
                 "camera" : camera
         };
+
+	//Starts up engine.js
         game(info);
 }
 
