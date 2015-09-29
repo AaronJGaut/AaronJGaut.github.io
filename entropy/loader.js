@@ -68,7 +68,6 @@ function getTextFile() {
 			//calls with null if something went wrong
 			var text = xhr.status == 200 ? xhr.responseText : null;
                         callback.apply(this, [text].concat(args));
-                        gettingFile = false;
                 }
         }
 }
@@ -195,8 +194,18 @@ function load() {
 }
 
 function loadWorlds(text) {
-        var reader = new LineReader(text);
-        var worldIds = reader.readTokens();
+        var reader;
+        var worldIds;
+        
+        try {
+                reader = new LineReader(text);
+                worldIds = reader.readTokens();
+        }
+        catch (err) {
+                var message = "Problem reading worlds/worlds.txt: " + err.message;
+                throw(message);
+        }
+        
         loadingCount += worldIds.length;
         for (var i = 0; i < worldIds.length; i++) {
                 getTextFile("worlds/world" + worldIds[i] + "/world" + worldIds[i] + ".json", loadWorldFromText, worldIds[i]);
@@ -205,8 +214,10 @@ function loadWorlds(text) {
 }
 
 function loadWorldFromText(text, id){
+        var world;
+
         try {
-                var world = JSON.parse(text);
+                world = JSON.parse(text);
         }
         catch (err) {
                 var message = "Problem reading world" + id + ".json: " + err.message; 
@@ -439,8 +450,18 @@ function getTileBoxes(tiles) {
 }
 
 function loadDictionaries(text) {
-        var reader = new LineReader(text);
-        var dictIds = reader.readTokens();
+        var reader;
+        var dictIds;
+
+        try {
+                reader = new LineReader(text);
+                dictIds = reader.readTokens();
+        }
+        catch (err) {
+                var message = "Problem loading dictionaries/dictionaries.txt: " + err.message;
+                throw message;
+        }
+
         loadingCount += dictIds.length;
         for (var i = 0; i < dictIds.length; i++) {
                 getTextFile("dictionaries/" + dictIds[i] + ".json", loadDictFromText, dictIds[i]);
@@ -461,8 +482,18 @@ function loadDictFromText(text, dictId) {
 }
 
 function loadBackgrounds(text) {
-        var reader = new LineReader(text);
-        var tks = reader.readTokens();
+        var reader;
+        var tks;
+
+        try {
+                reader = new LineReader(text);
+                tks = reader.readTokens();
+        }
+        catch (err) {
+                var message = "Problem reading backgrounds/backgrounds.txt: " + err.message;
+                throw message;
+        } 
+
         loadingCount += tks.length;
         
         for (var i = 0; i < tks.length; i++) {
@@ -478,8 +509,17 @@ function loadBackgrounds(text) {
 }
 
 function loadTilesheets(text) {
-        var reader = new LineReader(text);
-        var tks = reader.readTokens();
+        var reader;
+        var tks;
+
+        try {
+                reader = new LineReader(text);
+                tks = reader.readTokens();
+        }
+        catch (err) {
+                var message = "Problem reading tilesheets/tilesheets.txt: " + err.message;
+                throw(message);
+        }
         loadingCount += tks.length;
 
         for (var i = 0; i < tks.length; i++) {
@@ -495,9 +535,18 @@ function loadTilesheets(text) {
 }
 
 function loadAllEntityAttributes(text) {
-        var reader = new LineReader(text);
-        var tks = reader.readTokens();
-        
+        var reader;
+        var tks;
+
+        try {
+                reader = new LineReader(text);
+                tks = reader.readTokens();
+        }
+        catch (err) {
+                var message = "Problem loading entities/entities.txt: " + err.message;
+                throw message;
+        }        
+
         loadingCount += tks.length*2;
 
         for (var i = 0; i < tks.length; i++) {
