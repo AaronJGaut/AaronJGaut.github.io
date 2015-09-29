@@ -1,0 +1,15 @@
+<head>
+<script src="set.js"></script>
+<script src="quadtree.js"></script>
+</head>
+<body>
+<p id="log" style="font-family:monospace"></p>
+<script>
+        var Collider = getColliderFactory(3, 4);
+        var c = new Collider(data, dataBounds);
+        var out = document.getElementById("log");
+        setInterval(function(){
+                out.innerHTML = c.head.toString().replace(/\n/g, "<br>");
+        }, 50);
+</script>
+</body>

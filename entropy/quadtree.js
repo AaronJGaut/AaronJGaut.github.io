@@ -16,10 +16,10 @@ var Box = function(xbl, ybl, xtr, ytr, id) {
 };
 
 Box.prototype.intersects = function(box) {
-        return  this.bl.x < box.tr.x &&
-                this.tr.x > box.bl.x &&
-                this.bl.y < box.tr.y &&
-                this.tr.y > box.bl.y;
+        return  this.bl.x <= box.tr.x &&
+                this.tr.x >= box.bl.x &&
+                this.bl.y <= box.tr.y &&
+                this.tr.y >= box.bl.y;
 }
 
 Box.prototype.toString = function() {
@@ -46,6 +46,10 @@ function getColliderFactory(NODE_MAX, MAX_DEPTH) {
         function Collider(boxes, bounds) {
                 function Node(bounds, depth) {
                         this.bounds = bounds;
+                        this.center = {
+                                "x" : (this.bounds.bl.x + this.bounds.tr.x)/2,
+                                "y" : (this.bounds.bl.y + this.bounds.tr.y)/2
+                        };
                         this.depth = depth;
                         this.isLeaf = true;
                         this.boxes = [];
@@ -60,19 +64,18 @@ function getColliderFactory(NODE_MAX, MAX_DEPTH) {
                                 if (this.boxes.length == NODE_MAX && this.depth < MAX_DEPTH) {
                                         //time to split this up into quadrants
                                         this.isLeaf = false;
-                                        this.center = {"x" : (this.bounds.bl.x + this.bounds.tr.x)/2, "y" : (this.bounds.bl.y + this.bounds.tr.y)/2};
                                         
                                         //top right
-                                        var q1 = new Node(new Box(center.x, center.y, this.bounds.tr.x, this.bounds.tr.y), this.depth+1);
+                                        var q1 = new Node(new Box(this.center.x, this.center.y, this.bounds.tr.x, this.bounds.tr.y), this.depth+1);
                                         
                                         //top left
-                                        var q2 = new Node(new Box(this.bounds.bl.x, center.y, center.x, this.bounds.tr.y), this.depth+1); 
+                                        var q2 = new Node(new Box(this.bounds.bl.x, this.center.y, this.center.x, this.bounds.tr.y), this.depth+1); 
                                         
                                         //bottom left
-                                        var q3 = new Node(new Box(this.bounds.bl.x, this.bounds.bl.y, center.x, center.y), this.depth+1);
+                                        var q3 = new Node(new Box(this.bounds.bl.x, this.bounds.bl.y, this.center.x, this.center.y), this.depth+1);
                                         
                                         //bottom right
-                                        var q4 = new Node(new Box(center.x, this.bounds.bl.y, this.bounds.tr.x, center.y), this.depth+1);                                        
+                                        var q4 = new Node(new Box(this.center.x, this.bounds.bl.y, this.bounds.tr.x, this.center.y), this.depth+1);                                        
                                         this.children = [q1, q2, q3, q4];
 
                                         for (var i = 0; i < this.boxes.length; i++) {
@@ -127,12 +130,19 @@ function getColliderFactory(NODE_MAX, MAX_DEPTH) {
                                         this.children[3].remove(box);
                                 }
 
-                                var grandkids = [];
+                                var grandkidsSet = {};
                                 for (var i = 0; i < this.children.length; i++) {
                                         if (!this.children[i].isLeaf) {
                                                 return;
                                         }
-                                        grandkids = grandkids.concat(this.children[i].boxes);
+                                        for (var j = 0; j < this.children[i].boxes.length; j++) {
+                                                grandkidsSet[this.children[i].boxes[j].id] = this.children[i].boxes[j];
+                                        }
+                                }
+
+                                var grandkids = [];
+                                for (kid in grandkidsSet) {
+                                        grandkids.push(grandkidsSet[kid]);
                                 }
 
                                 if (grandkids.length <= NODE_MAX) {
@@ -210,12 +220,19 @@ function getColliderFactory(NODE_MAX, MAX_DEPTH) {
                                         this.children[3].getCollisionsAndRemove(box, collisions);
                                 }
                                 
-                                var grandkids = [];
+                                var grandkidsSet = {};
                                 for (var i = 0; i < this.children.length; i++) {
                                         if (!this.children[i].isLeaf) {
                                                 return;
                                         }
-                                        grandkids = grandkids.concat(this.children[i].boxes);
+                                        for (var j = 0; j < this.children[i].boxes.length; j++) {
+                                                grandkidsSet[this.children[i].boxes[j].id] = this.children[i].boxes[j];
+                                        }
+                                }
+
+                                var grandkids = [];
+                                for (kid in grandkidsSet) {
+                                        grandkids.push(grandkidsSet[kid]);
                                 }
 
                                 if (grandkids.length <= NODE_MAX) {
@@ -261,20 +278,20 @@ function getColliderFactory(NODE_MAX, MAX_DEPTH) {
                 }
         }
 
-        Collider.prototype.add = function(box) {
-                this.head.add(box);
+        Collider.prototype.insert = function(box) {
+                this.head.insert(box);
         };
 
         Collider.prototype.remove = function(box) {
-                if (head.intersects(box)) {
+                if (this.head.intersects(box)) {
                         this.head.remove(box);
                 }
         };
 
         Collider.prototype.getCollisions = function(box) {
                 var collisions = new Set();
-                if (head.intersects(box)) {
-                        return this.head.getCollisions(box, collisions);
+                if (this.head.intersects(box)) {
+                        this.head.getCollisions(box, collisions);
                 }
                 return collisions.elements();
         };
@@ -282,7 +299,7 @@ function getColliderFactory(NODE_MAX, MAX_DEPTH) {
         Collider.prototype.getCollisionsAndRemove = function(box) {
                 //gets collisions and removes in one traversal
                 var collisions = new Set();
-                if (head.intersects(box)) {
+                if (this.head.intersects(box)) {
                         this.head.getCollisionsAndRemove(box, collisions);
                 }
                 return collisions.elements();
