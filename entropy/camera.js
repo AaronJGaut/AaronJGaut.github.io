@@ -1,8 +1,24 @@
 function getCameraFactory(constants) {
+        var VX_FACTOR = constants.CAMERA_VX_FACTOR;
+        var VY_FACTOR = constants.CAMERA_VY_FACTOR;
+
+        var X_DESIRE_WEIGHT = constants.CAMERA_X_DESIRE_WEIGHT;
+        var Y_DESIRE_WEIGHT = constants.CAMERA_Y_DESIRE_WEIGHT;
+        
+        if (X_DESIRE_WEIGHT > 1 || X_DESIRE_WEIGHT < 0) {
+                throw "constant CAMERA_X_DESIRE_WEIGHT should be in the range [0,1]";
+        }
+        if (Y_DESIRE_WEIGHT > 1 || Y_DESIRE_WEIGHT < 0) {
+                throw "constant CAMERA_Y_DESIRE_WEIGHT should be in the range [0,1]";
+        }
+        
+        var X_OLD_WEIGHT = 1 - X_DESIRE_WEIGHT;
+        var Y_OLD_WEIGHT = 1 - Y_DESIRE_WEIGHT;
+        
         function Camera(room, player) {
                 this.center = {};
-                this.center.x = player.x + 12*player.vx + player.width/2;
-                this.center.y = player.y + 30*player.vy + player.height/2;
+                this.center.x = player.x + VX_FACTOR*player.vx + player.width/2;
+                this.center.y = player.y + VY_FACTOR*player.vy + player.height/2;
                 
                 if (room.width < constants.CAMERA_WIDTH || room.height < constants.CAMERA_HEIGHT) {
                         //if room is too small, enter free mode
@@ -47,10 +63,11 @@ function getCameraFactory(constants) {
                 }
                
                 this.updateCenter = function() {
-                        desiredX = player.x + 30*player.vx + player.width/2;
-                        desiredY = player.y + 30*player.vy + player.height/2;        
-                        this.center.x = (24*this.center.x + desiredX)/25;
-                        this.center.y = (24*this.center.y + desiredY)/25;
+                        desiredX = player.x + VX_FACTOR*player.vx + player.width/2;
+                        desiredY = player.y + VY_FACTOR*player.vy + player.height/2;        
+                        this.center.x = X_OLD_WEIGHT*this.center.x + X_DESIRE_WEIGHT*desiredX;
+                        this.center.y = Y_OLD_WEIGHT*this.center.y + Y_DESIRE_WEIGHT*desiredY;
+
                         if (Math.abs(desiredX - this.center.x) < 1/constants.TILE_SIZE) {
                                 this.center.x = desiredX;
                         }
