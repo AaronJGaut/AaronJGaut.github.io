@@ -5,9 +5,13 @@
 <body>
 <p id="log" style="font-family:monospace"></p>
 <script>
-        var Collider = getColliderFactory(3, 4);
-        var c = new Collider(data, dataBounds);
+        var Collider = getColliderFactory();
+        var c = new Collider(dataBounds, 5, 4);
+        for (boxId in data) {
+                c.insert(data[boxId]);
+        }
         var out = document.getElementById("log");
+        
         setInterval(function(){
                 out.innerHTML = c.head.toString().replace(/\n/g, "<br>");
         }, 50);

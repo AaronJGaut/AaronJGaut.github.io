@@ -42,8 +42,9 @@ var data = {
 
 var dataBounds = new Box(-1, -1, 10, 11);
 
-function getColliderFactory(NODE_MAX, MAX_DEPTH) {
-        function Collider(boxes, bounds) {
+function getColliderFactory(constants) {
+        function Collider(bounds, NODE_MAX, MAX_DEPTH) {
+
                 function Node(bounds, depth) {
                         this.bounds = bounds;
                         this.center = {
@@ -271,38 +272,63 @@ function getColliderFactory(NODE_MAX, MAX_DEPTH) {
                         }
                 };
 
-                this.head = new Node(bounds, 0);
-
-                for (var id in boxes) {
-                        this.head.insert(boxes[id]);
-                }
+                this.contents = {};
+                
+                var boundsCopy = new Box(bounds.bl.x, bounds.bl.y, bounds.tr.x, bounds.tr.y);
+                this.head = new Node(boundsCopy, 0);
         }
 
         Collider.prototype.insert = function(box) {
-                this.head.insert(box);
-        };
+                if (this.contents[box.id] !== undefined) {
+                        throw box.id + " already belongs to collider";
+                }
 
-        Collider.prototype.remove = function(box) {
+                // A box won't be added if it is completely outside the quadtree
                 if (this.head.intersects(box)) {
-                        this.head.remove(box);
+                        var boxCopy = new Box(box.bl.x, box.bl.y, box.tr.x, box.tr.y, box.id);
+                        this.head.insert(boxCopy);
+                        this.contents[boxCopy.id] = boxCopy;
                 }
         };
 
-        Collider.prototype.getCollisions = function(box) {
-                var collisions = new Set();
-                if (this.head.intersects(box)) {
-                        this.head.getCollisions(box, collisions);
-                }
+        Collider.prototype.remove = function(id) {
+                var target = this.contents[id];
+
+                if (target === undefined) return;
+
+                this.head.remove(target);
+                delete this.contents[id];   
+        };
+
+        Collider.prototype.getCollisions = function(id) {
+                var target = this.contents[id];
+                var collisions = new Set(); 
+       
+                if (target !== undefined) { 
+                        this.head.getCollisions(this.contents[id], collisions);
+                }                
+
                 return collisions.elements();
         };
 
-        Collider.prototype.getCollisionsAndRemove = function(box) {
+        Collider.prototype.getCollisionsAndRemove = function(id) {
                 //gets collisions and removes in one traversal
+                var target = this.contents[id];
+
                 var collisions = new Set();
-                if (this.head.intersects(box)) {
-                        this.head.getCollisionsAndRemove(box, collisions);
-                }
+
+                if (target !== undefined) {
+                        this.head.getCollisionsAndRemove(target, collisions);
+                        delete this.contents[id];
+                }                
+
                 return collisions.elements();
+        };
+
+        Collider.prototype.update = function(box) {
+                //box will just be removed if the new location is completely outside the quadtree
+                this.remove(box.id);
+                this.insert(box);
         };
 
         return Collider;

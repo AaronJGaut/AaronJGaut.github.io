@@ -71,7 +71,8 @@ function getEntityFactory(attributes, constants) {
 
                 this.animationState = "standcenter";
                 this.animationFrame = 0;
-               
+                this.spriteCoord = this.getSpriteCoord();              
+ 
                 this.midairJumps = this.MAX_JUMPS;
 
                 this.getPhysicsSnapshot = function() {
@@ -206,6 +207,7 @@ function getEntityFactory(attributes, constants) {
                         this.lastInput = keyInput;
                 
                         this.determineAnimationState();
+                        this.spriteCoord = this.getSpriteCoord();
                         
                         this.onGround = false;
                 }

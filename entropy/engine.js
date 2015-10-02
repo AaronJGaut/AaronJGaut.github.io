@@ -3,22 +3,7 @@ function game(info){
 //For debugging purposes
 game.info = info;
 
-var displayCv = document.getElementById("gamecanvas");
-var displayCtx = displayCv.getContext("2d");
-
-
-var drawCv = document.createElement("canvas");
-drawCv.width = 200;
-drawCv.height = 150;
-var drawCtx = drawCv.getContext("2d");
-
-game.drawCtx = drawCtx;
-
-drawCtx.imageSmoothingEnabled = false;
-displayCtx.imageSmoothingEnabled = false;
-
-drawCtx.font = "10px Arial";
-drawCtx.fillStyle = "white";
+var dm = new DrawManager(info.dicts.constants);
 
 var animationId;
 var player;
@@ -60,8 +45,7 @@ function enterWorld(world, entrance) {
         var zone = entrance.zone;
 
         activeWorld = world;
-        background = world.background;
-        tilesheet = world.tilesheet;
+        dm.initWorld(world.background, world.tilesheet);
 
         enterRoom(room, zone);
 }
@@ -93,29 +77,12 @@ function enterRoom(room, zone) {
 
         camera = new info.camera(room, player);
 
+        dm.initRoom(room, camera);
+
         startSteps();
 }
 
-function drawBackground() {
-        drawCtx.drawImage(activeWorld.background, 0, 0);
-}
-
-function drawTile(sheet, x, y, destx, desty) {
-        var SIZE = info.dicts.constants.TILE_SIZE;
-        drawCtx.drawImage(sheet, x*SIZE, y*SIZE, SIZE, SIZE, Math.round(destx*SIZE), Math.round(desty*SIZE), SIZE, SIZE);
-}
-
 function step() {
-        drawBackground();
-        for (var i = 0; i < activeRoom.width; i++) {
-                for (var j = 0; j < activeRoom.height; j++) {
-                        if (activeRoom.tiles[i][j] === "wall") {
-                                destPoint = camera.transformPoint({"x":i, "y":j});
-                                drawTile(activeWorld.tilesheet, activeRoom.drawCoords[i][j][0], 
-                                        activeRoom.drawCoords[i][j][1], destPoint.x, info.dicts.constants.CAMERA_HEIGHT-destPoint.y-1);
-                        }
-                }
-        }
         /*
         drawCtx.fillText("cameraX : " + camera.center.x, 10, 12);
         drawCtx.fillText("cameraY : " + camera.center.y, 10, 24);
@@ -129,7 +96,6 @@ function step() {
         drawCtx.fillText("playerVX : " + player.vx, 10, 120);
         drawCtx.fillText("playerVY : " + player.vy, 10, 134);
         */
-        
         player.step();
 
         var collisions = getCollisions(activeRoom.tileBoxes);
@@ -143,12 +109,11 @@ function step() {
                 }
         }
 
-
-        player.render(drawCtx, camera);
-        
         camera.updateCenter();
 
-        displayCtx.drawImage(drawCv, 0, 0);
+        dm.startFrame();
+        dm.drawEntity(player);
+        dm.endFrame();
 
         if (animationId != undefined) {
                 animationId = window.requestAnimationFrame(step);
