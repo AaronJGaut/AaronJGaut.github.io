@@ -113,22 +113,10 @@ function getColliderFactory(constants) {
                                 }
                         }
                         else {
-                                var left = box.bl.x <= this.center.x;
-                                var right = box.tr.x >= this.center.x;
-                                var up = box.tr.y >= this.center.y;
-                                var down = box.bl.y <= this.center.y;
-                                
-                                if (right && up) {
-                                        this.children[0].remove(box);
-                                }
-                                if (left && up) {
-                                        this.children[1].remove(box);
-                                }
-                                if (left && down) {
-                                        this.children[2].remove(box);
-                                }
-                                if (right && down) {
-                                        this.children[3].remove(box);
+                                for (var i = 0; i < this.children.length; i++) {
+                                        if (this.children[i].intersects(box)) {
+                                                this.children[i].getCollisions(box, collisions);
+                                        }
                                 }
 
                                 var grandkidsSet = {};
@@ -167,22 +155,10 @@ function getColliderFactory(constants) {
                         }
 
                         else {
-                                var left = box.bl.x <= this.center.x;
-                                var right = box.tr.x >= this.center.x;
-                                var up = box.tr.y >= this.center.y;
-                                var down = box.bl.y <= this.center.y;
-                                
-                                if (right && up) {
-                                        this.children[0].getCollisions(box, collisions);
-                                }
-                                if (left && up) {
-                                        this.children[1].getCollisions(box, collisions);
-                                }
-                                if (left && down) {
-                                        this.children[2].getCollisions(box, collisions);
-                                }
-                                if (right && down) {
-                                        this.children[3].getCollisions(box, collisions);
+                                for (var i = 0; i < this.children.length; i++) {
+                                        if (this.children[i].intersects(box)) {
+                                                this.children[i].getCollisions(box, collisions);
+                                        }
                                 }
                         }
                         
@@ -203,22 +179,10 @@ function getColliderFactory(constants) {
                         }
 
                         else {
-                                var left = box.bl.x <= this.center.x;
-                                var right = box.tr.x >= this.center.x;
-                                var up = box.tr.y >= this.center.y;
-                                var down = box.bl.y <= this.center.y;
-                                
-                                if (right && up) {
-                                        this.children[0].getCollisionsAndRemove(box, collisions);
-                                }
-                                if (left && up) {
-                                        this.children[1].getCollisionsAndRemove(box, collisions);
-                                }
-                                if (left && down) {
-                                        this.children[2].getCollisionsAndRemove(box, collisions);
-                                }
-                                if (right && down) {
-                                        this.children[3].getCollisionsAndRemove(box, collisions);
+                                for (var i = 0; i < this.children.length; i++) {
+                                        if (this.children[i].intersects(box)) {
+                                                this.children[i].getCollisions(box, collisions);
+                                        }
                                 }
                                 
                                 var grandkidsSet = {};

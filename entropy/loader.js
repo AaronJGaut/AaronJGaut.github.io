@@ -147,7 +147,7 @@ function LineReader(text){
 }
     
 function pixelToHex(data){
-	/* Converts an array representing a 24 or 
+	/* Maps an array representing a 24 or 
 	 * 32 bit pixel to a hex string of the form:
 	 *   0xNNNNNN
 	 */ 
@@ -316,7 +316,7 @@ function getDrawCoords(tiles) {
 	 * An array of these coordinates is finally returned.
 	 */
 
-	//Todo: move these dicts to external JSON files in the dictionaries folder
+	//TODO: move these dicts to external JSON files in the dictionaries folder
 	needsTiling = {
                 "wall" : true
         };

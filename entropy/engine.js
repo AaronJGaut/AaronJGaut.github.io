@@ -29,7 +29,6 @@ function startSteps() {
                 animationId = window.requestAnimationFrame(step);
         }
 }
-game.start = startSteps;
 
 function stopSteps() {
         if (animationId != undefined) {
@@ -83,19 +82,6 @@ function enterRoom(room, zone) {
 }
 
 function step() {
-        /*
-        drawCtx.fillText("cameraX : " + camera.center.x, 10, 12);
-        drawCtx.fillText("cameraY : " + camera.center.y, 10, 24);
-        drawCtx.fillText("cameraMode : " + camera.mode, 10, 36);
-        drawCtx.fillText("bounded left : " + camera.bleft, 10, 48);
-        drawCtx.fillText("bounded right : " + camera.bright, 10, 60);
-        drawCtx.fillText("bounded top : " + camera.btop, 10, 72);
-        drawCtx.fillText("bounded bottom : " + camera.bbottom, 10, 84);
-        drawCtx.fillText("playerX : " + player.x, 10, 96);
-        drawCtx.fillText("playerY : " + player.y, 10, 108);
-        drawCtx.fillText("playerVX : " + player.vx, 10, 120);
-        drawCtx.fillText("playerVY : " + player.vy, 10, 134);
-        */
         player.step();
 
         var collisions = getCollisions(activeRoom.tileBoxes);

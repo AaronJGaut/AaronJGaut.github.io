@@ -68,21 +68,14 @@ function getCameraFactory(constants) {
                         this.center.x = X_OLD_WEIGHT*this.center.x + X_DESIRE_WEIGHT*desiredX;
                         this.center.y = Y_OLD_WEIGHT*this.center.y + Y_DESIRE_WEIGHT*desiredY;
 
-                        if (Math.abs(desiredX - this.center.x) < 1/constants.TILE_SIZE) {
-                                this.center.x = desiredX;
-                        }
-                        if (Math.abs(desiredY - this.center.y) < 1/constants.TILE_SIZE) {
-                                this.center.y = desiredY;
-                        }
                         this.enforceBounds();
-
                 };
 
                 this.transformPoint = function(point) {
                         var snapToTile = function(n) { return Math.round(n*constants.TILE_SIZE)/constants.TILE_SIZE; };
                         return {
-                                "x" : snapToTile(point.x) - snapToTile(this.center.x) + constants.CAMERA_WIDTH/2,
-                                "y" : snapToTile(point.y) - snapToTile(this.center.y) + constants.CAMERA_HEIGHT/2
+                                "x" : (player.lastInput.right + player.lastInput.left === 1 ? point.x : snapToTile(point.x)) - this.center.x + constants.CAMERA_WIDTH/2,
+                                "y" : point.y - this.center.y + constants.CAMERA_HEIGHT/2
                         };
                 };
  

@@ -14,8 +14,9 @@
         "CAMERA_Y_DESIRE_WEIGHT" : 0.04,
 
         "DIV_ID" : "gamediv",
-        "CANVAS_LAYERS" : 5,
+        "CANVAS_LAYERS" : 6,
         "CANVAS_CSS_CLASSNAME" : "gamecanvas",
         "BACKGROUND_LAYER" : 0,
-        "TILE_LAYER" : 2
+        "TILE_LAYER" : 2,
+        "OVERLAY_LAYER" : 5
 }
