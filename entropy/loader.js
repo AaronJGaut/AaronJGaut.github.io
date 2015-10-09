@@ -9,12 +9,20 @@ var readyCheck = setInterval(function() {
 //loader starts here
 function loader() {
 
-loadingCount = 0;
+var loadingCount = 0;
 var readyState = "uninitialized";
+
 var entityAttributes = {};
 var entitySprites = {};
 var backgrounds = {};
 var tilesheets = {};
+var overlay = {};
+
+var drawManager;
+
+var audioAssets = {};
+var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+var audioManager;
 
 //Stores the camera prototype after getting info from the constants dictionary
 var camera;
@@ -168,14 +176,16 @@ function load() {
 	 */
 
         readyState = "loading1";
-        loadingCount+=5;
+        loadingCount+=7;
         
 	getTextFile("worlds/worlds.txt", loadWorlds);
         getTextFile("dictionaries/dictionaries.txt", loadDictionaries);
         getTextFile("backgrounds/backgrounds.txt", loadBackgrounds);
         getTextFile("tilesheets/tilesheets.txt", loadTilesheets);
         getTextFile("entities/entities.txt", loadAllEntityAttributes);
-        
+	getTextFile("overlay/overlay.txt", loadOverlayGraphics);
+        getTextFile("audio/audio.txt", loadAudioAssets);
+ 
 	var loadTextReadyCheck = setInterval(function() {
                 if (readyState === "loading1" && loadingCount === 0) {
                         clearInterval(loadTextReadyCheck);
@@ -624,6 +634,79 @@ function linkObjects() {
         
         //preparing camera class
         camera = getCameraFactory(dicts.constants);
+
+
+        drawManager = new DrawManager(dicts.constants, overlay.overlay);
+        audioManager = new AudioManager(audioAssets, dicts.constants, audioContext);
+}
+
+function loadOverlayGraphics(text) {
+	var reader;
+	var tks;
+
+	try {
+		reader = new LineReader(text);
+		tks = reader.readTokens();
+	}
+	catch (err) {
+		var message = "Problem reading overlay/overlay.txt: " + err.message;
+		throw message;
+	}
+        
+        loadingCount += tks.length;
+        
+        for (var i = 0; i < tks.length; i++) {
+                var overImg = new Image();
+                overImg.onload = function() {
+                        loadingCount--;
+                };
+                overImg.src = "overlay/" + tks[i] + ".png";
+                overlay[tks[i]] = overImg;
+        }
+
+        loadingCount--;
+}
+
+function loadAudioAssets(text) {
+	var reader;
+	var tks;
+
+	try {
+		reader = new LineReader(text);
+		tks = reader.readTokens();
+	}
+	catch (err) {
+		if (err === "EOF") {
+                        tks = [];
+                }
+                else {
+                        var message = "Problem reading audio/audio.txt: " + err.message;
+		        throw message;
+                }
+	}
+        
+        loadingCount += tks.length;
+
+        for (var i = 0; i < tks.length; i++) {
+                loadAudioFile("audio/"+tks[i]+".oga", tks[i]);
+        }
+
+        loadingCount--;
+}
+
+function loadAudioFile(path, id){
+        var request = new XMLHttpRequest();
+        request.open("GET", path, true);
+        request.responseType = "arraybuffer";
+ 
+        request.onload = function() {
+                audioContext.decodeAudioData(request.response, function(buffer) {
+                        audioAssets[id] = buffer;
+                        loadingCount--;
+                });
+        }; 
+
+        request.send();
 }
 
 function startGame() {
@@ -631,7 +714,9 @@ function startGame() {
                 "worlds" : worldInfo,
                 "dicts" : dicts,
                 "entities" : entities,
-                "camera" : camera
+                "camera" : camera,
+                "audio" : audioManager,
+                "draw" : drawManager
         };
 
 	//Starts up engine.js

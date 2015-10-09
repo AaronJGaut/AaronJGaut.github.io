@@ -3,7 +3,6 @@ function game(info){
 //For debugging purposes
 game.info = info;
 
-var dm = new DrawManager(info.dicts.constants);
 
 var animationId;
 var player;
@@ -44,7 +43,9 @@ function enterWorld(world, entrance) {
         var zone = entrance.zone;
 
         activeWorld = world;
-        dm.initWorld(world.background, world.tilesheet);
+        
+        info.draw.initWorld(world.background, world.tilesheet);
+        info.audio.start(world.music, "music", "song");
 
         enterRoom(room, zone);
 }
@@ -76,7 +77,7 @@ function enterRoom(room, zone) {
 
         camera = new info.camera(room, player);
 
-        dm.initRoom(room, camera);
+        info.draw.initRoom(room, camera);
 
         startSteps();
 }
@@ -97,9 +98,9 @@ function step() {
 
         camera.updateCenter();
 
-        dm.startFrame();
-        dm.drawEntity(player);
-        dm.endFrame();
+        info.draw.startFrame();
+        info.draw.drawEntity(player);
+        info.draw.endFrame();
 
         if (animationId != undefined) {
                 animationId = window.requestAnimationFrame(step);

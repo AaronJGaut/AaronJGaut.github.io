@@ -18,5 +18,9 @@
         "CANVAS_CSS_CLASSNAME" : "gamecanvas",
         "BACKGROUND_LAYER" : 0,
         "TILE_LAYER" : 2,
-        "OVERLAY_LAYER" : 5
+        "OVERLAY_LAYER" : 5,
+
+        "DEFAULT_MASTER_GAIN" : 0.5,
+        "DEFAULT_MUSIC_GAIN" : 0.5,
+        "DEFAULT_SOUND_GAIN" : 0.5
 }

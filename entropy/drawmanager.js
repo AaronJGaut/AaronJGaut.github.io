@@ -1,9 +1,10 @@
-function DrawManager(constants) {
+function DrawManager(constants, overlay) {
         this.constants = constants;
         this.cvm = new CanvasManager(constants);
         this.SCALE = constants.TILE_SIZE; 
         this.cvheight = constants.CAMERA_HEIGHT*this.SCALE + constants.OVERLAY_HEIGHT;
         this.cvwidth = constants.CAMERA_WIDTH*this.SCALE;
+	this.overlay = overlay;
 }
 
 DrawManager.prototype.drawEntity = function(entity) {
@@ -67,6 +68,11 @@ DrawManager.prototype.initRoom = function(room, camera) {
                                                         this.SCALE, this.SCALE);
                 }
         }
+
+	//PLACEHOLDER FOR ACTUAL OVERLAY
+	this.cvm.drawSprite(this.overlay, 0, 0, this.cvwidth, this.constants.OVERLAY_HEIGHT,
+				this.constants.OVERLAY_LAYER, 0, 0);
+				
 };
 
 DrawManager.prototype.updateTile = function() {
