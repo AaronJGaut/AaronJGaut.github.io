@@ -1,4 +1,4 @@
-function getEntityFactory(attributes, constants) {
+function getEntityFactory(attributes, constants, audioManager) {
         function EntityCommon(x, y) {
                 
                 this.x = x;
@@ -159,6 +159,7 @@ function getEntityFactory(attributes, constants) {
                         
                         //pressing jump key
                         if (!this.lastInput.jump && keyInput.jump) {
+                                audioManager.start(this.sfx.jump, "sound", null);
                                 if (this.onGround) {
                                         this.vy += 0.35; 
                                 }
@@ -226,6 +227,9 @@ function getEntityFactory(attributes, constants) {
                                                 this.y = collision.y;
                                                 this.onGround = true;
                                                 this.midairJumps = this.MAX_JUMPS;
+                                                if (this.lastStep.y > this.y) {
+                                                        audioManager.start(this.sfx.land, "sound", null);
+                                                }
                                                 break;
                                         case "left" :
                                                 this.vx = 0;

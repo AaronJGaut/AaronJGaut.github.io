@@ -626,18 +626,19 @@ function linkObjects() {
                 }
         }
         
+        audioManager = new AudioManager(audioAssets, dicts.constants, audioContext);
+        
         //getting entities
         for (e in entityAttributes) {
                 entityAttributes[e].sprites = entitySprites[e];
         }
-        entities = getEntityFactory(entityAttributes, dicts.constants);
+        entities = getEntityFactory(entityAttributes, dicts.constants, audioManager);
         
         //preparing camera class
         camera = getCameraFactory(dicts.constants);
 
 
         drawManager = new DrawManager(dicts.constants, overlay.overlay);
-        audioManager = new AudioManager(audioAssets, dicts.constants, audioContext);
 }
 
 function loadOverlayGraphics(text) {
@@ -688,7 +689,7 @@ function loadAudioAssets(text) {
         loadingCount += tks.length;
 
         for (var i = 0; i < tks.length; i++) {
-                loadAudioFile("audio/"+tks[i]+".oga", tks[i]);
+                loadAudioFile("audio/"+tks[i]+".ogg", tks[i]);
         }
 
         loadingCount--;
