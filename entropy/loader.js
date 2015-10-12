@@ -20,6 +20,8 @@ var overlay = {};
 
 var drawManager;
 
+var desiredAudioExts = ["ogg", "mp3"];
+var audioExt;
 var audioAssets = {};
 var audioContext = new (window.AudioContext || window.webkitAudioContext)();
 var audioManager;
@@ -167,6 +169,15 @@ function pixelToHex(data){
         return "0x" + num;
 }
 
+function getAudioExt(desiredExts) {
+        var tester = document.createElement("audio");
+        for (var i = 0 ; i < desiredExts.length; i++) {
+                if (tester.canPlayType && tester.canPlayType("audio/"+desiredExts[i]+";").replace(/no/, ""))
+                        return desiredExts[i];
+        }
+        return null;
+}
+
 function load() {
 	/* loadingCount is incremented each time a new file needs
 	 * to be loaded, and is decremented when a file has been
@@ -174,9 +185,8 @@ function load() {
 	 * is set to the next value. Multiple readyStates are used
 	 * for loading because there are some dependencies.
 	 */
-
         readyState = "loading1";
-        loadingCount+=7;
+        loadingCount+=6;
         
 	getTextFile("worlds/worlds.txt", loadWorlds);
         getTextFile("dictionaries/dictionaries.txt", loadDictionaries);
@@ -184,11 +194,15 @@ function load() {
         getTextFile("tilesheets/tilesheets.txt", loadTilesheets);
         getTextFile("entities/entities.txt", loadAllEntityAttributes);
 	getTextFile("overlay/overlay.txt", loadOverlayGraphics);
-        getTextFile("audio/audio.txt", loadAudioAssets);
  
 	var loadTextReadyCheck = setInterval(function() {
                 if (readyState === "loading1" && loadingCount === 0) {
                         clearInterval(loadTextReadyCheck);
+                        
+                        loadingCount++;
+                        audioExt = getAudioExt(dicts.constants.AUDIO_EXTS);
+                        getTextFile("audio/audio.txt", loadAudioAssets);
+                        
                         loadRoomTiles();
                         readyState = "loading2";
                 }
@@ -688,7 +702,7 @@ function loadAudioAssets(text) {
         loadingCount += tks.length;
 
         for (var i = 0; i < tks.length; i++) {
-                loadAudioFile("audio/"+tks[i]+".oga", tks[i]);
+                loadAudioFile("audio/"+tks[i]+"."+audioExt, tks[i]);
         }
 
         loadingCount--;
@@ -705,7 +719,6 @@ function loadAudioFile(path, id){
                         loadingCount--;
                 });
         }; 
-
         request.send();
 }
 
@@ -718,7 +731,6 @@ function startGame() {
                 "audio" : audioManager,
                 "draw" : drawManager
         };
-
 	//Starts up engine.js
         game(info);
 }
