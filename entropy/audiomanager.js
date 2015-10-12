@@ -48,6 +48,9 @@ AudioManager.prototype.start = function(audioId, type, playbackId, delay) {
          * - delay: number of seconds to wait before playing. If undefined, the
          *      playback will begin immediately.
          */
+        if (this.audioAssets[audioId] === null) {
+                return;
+        }
         if (delay === undefined) {
                 delay = 0;
         }

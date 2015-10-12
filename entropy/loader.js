@@ -703,7 +703,12 @@ function loadAudioAssets(text) {
         loadingCount += tks.length;
 
         for (var i = 0; i < tks.length; i++) {
-                loadAudioFile("audio/"+tks[i]+"."+audioExt, tks[i]);
+                try {
+                        loadAudioFile("audio/"+tks[i]+"."+audioExt, tks[i]);
+                }
+                catch (err) {
+                        audioAssets[tks[i]] = null;
+                }
         }
 
         loadingCount--;
