@@ -740,9 +740,6 @@ function loadAudioFile(path, id){
                                 loadingCount--;
                         }
                 }
-                else {
-                        console.log("readyState:" + request.readyState);
-                }
         };
         request.send();
 }
