@@ -10,10 +10,12 @@ var readyCheck = setInterval(function() {
 function loader() {
 
 var loadingCount = 0;
-window.setInterval(function() {
-        console.log(loadingCount);
-}, 10);
+
 var readyState = "uninitialized";
+
+var loadPrinter = window.setInterval(function() {
+        console.log("readyState="+readyState+"; loadingCount="+loadingCount);
+}, 100);
 
 var entityAttributes = {};
 var entitySprites = {};
@@ -725,15 +727,23 @@ function loadAudioFile(path, id){
         request.responseType = "arraybuffer";
  
         request.onload = function() {
-                audioContext.decodeAudioData(request.response, function(buffer) {
-                        audioAssets[id] = buffer;
+                try {
+                        audioContext.decodeAudioData(request.response, function(buffer) {
+                                audioAssets[id] = buffer;
+                                loadingCount--;
+                        });
+                }
+                catch(err) {
+                        console.log(path + " failed to load: " + err.message);
+                        audioAssets[id] = null;
                         loadingCount--;
-                });
+                }
         }; 
         request.send();
 }
 
 function startGame() {
+        window.clearInterval(loadPrinter);
 	var info = {
                 "worlds" : worldInfo,
                 "dicts" : dicts,
