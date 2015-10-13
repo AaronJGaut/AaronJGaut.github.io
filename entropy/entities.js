@@ -71,7 +71,6 @@ function getEntityFactory(attributes, constants, audioManager) {
 
                 this.animationState = "standcenter";
                 this.animationFrame = 0;
-                this.spriteCoord = this.getSpriteCoord();              
  
                 this.midairJumps = this.MAX_JUMPS;
 
@@ -208,7 +207,6 @@ function getEntityFactory(attributes, constants, audioManager) {
                         this.lastInput = keyInput;
                 
                         this.determineAnimationState();
-                        this.spriteCoord = this.getSpriteCoord();
                         
                         this.onGround = false;
                 }
@@ -244,7 +242,7 @@ function getEntityFactory(attributes, constants, audioManager) {
                 }
         };
 
-        entities.mob = function(x, y) {
+        entities.goomba = function(x, y) {
                 this.inherit = EntityCommon;
                 this.inherit(x, y);
                 
@@ -263,3 +261,20 @@ function getEntityFactory(attributes, constants, audioManager) {
 
         return entities;
 }
+
+
+myId = "player";
+
+
+entities[myId] 
+
+
+
+
+
+
+
+
+
+
+

@@ -1,5 +1,11 @@
 {
-        "entities" : {},
+        "entities" : {
+                "battl" : {
+                        "entityId" : "mob",
+                        "x" : 5,
+                        "y" : 5
+                }
+        },
         
         "zones" : {
                 "initial" : {
