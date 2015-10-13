@@ -708,6 +708,8 @@ function loadAudioAssets(text) {
                 }
                 catch (err) {
                         audioAssets[tks[i]] = null;
+                        console.log("audio/"+tks[i]+"."+audioExt + " failed to load: " + err.message);
+                        loadingCount--;
                 }
         }
 
