@@ -726,19 +726,21 @@ function loadAudioFile(path, id){
         request.open("GET", path, true);
         request.responseType = "arraybuffer";
  
-        request.onload = function() {
-                try {
-                        audioContext.decodeAudioData(request.response, function(buffer) {
-                                audioAssets[id] = buffer;
+        request.onreadystatechange = function() {
+                if (request.readyState === 4) {
+                        if (request.status == 200) {
+                                audioContext.decodeAudioData(request.response, function(buffer) {
+                                        audioAssets[id] = buffer;
+                                        loadingCount--;
+                                });
+                        }
+                        else {
+                                console.log(path+" failed to load with status: "+request.status);
+                                audioAssets[id] = null;
                                 loadingCount--;
-                        });
+                        }
                 }
-                catch(err) {
-                        console.log(path + " failed to load: " + err.message);
-                        audioAssets[id] = null;
-                        loadingCount--;
-                }
-        }; 
+        };
         request.send();
 }
 
