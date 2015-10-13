@@ -1,8 +1,12 @@
 function getEntityFactory(attributes, constants, audioManager) {
-        function EntityCommon(x, y) {
+        function EntityCommon(x, y, z) {
                 
                 this.x = x;
                 this.y = y;
+                
+                if (z !== undefined) {
+                        this.zIndex = z;
+                }
 
                 this.getBox = function() {
                         return {
@@ -60,7 +64,7 @@ function getEntityFactory(attributes, constants, audioManager) {
         var entities = {};
 
         //entity classes start here
-        entities.player = function(x, y, keyboard) {
+        entities.player = function(x, y, keyboard, z) {
                 this.inherit = EntityCommon;
                 this.inherit(x, y);
                 this.keyboard = keyboard;
@@ -68,6 +72,10 @@ function getEntityFactory(attributes, constants, audioManager) {
                 this.vx = 0;
                 this.vy = 0;
                 this.MAX_JUMPS = 1;
+
+                if (this.zLevel !== undefined) {
+                        this.zLevel = z;
+                }
 
                 this.animationState = "standcenter";
                 this.animationFrame = 0;
