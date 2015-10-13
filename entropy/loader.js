@@ -10,6 +10,9 @@ var readyCheck = setInterval(function() {
 function loader() {
 
 var loadingCount = 0;
+window.setInterval(function() {
+        console.log(loadingCount);
+}, 10);
 var readyState = "uninitialized";
 
 var entityAttributes = {};
