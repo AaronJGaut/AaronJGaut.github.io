@@ -4,6 +4,11 @@ function getEntityFactory(attributes, constants, audioManager) {
                 this.x = x;
                 this.y = y;
 
+                this.vx = 0;
+                this.vy = 0;
+
+                this.animationFrame = 0;
+
                 this.getBox = function() {
                         return {
                                 "bl" : {
@@ -44,33 +49,25 @@ function getEntityFactory(attributes, constants, audioManager) {
                                 this.animationFrame = 0;
                         }
                 };
-
-                this.render = function(ctx, camera) {
-                        var scale = constants.TILE_SIZE;
-                        var spriteCoord = this.getSpriteCoord();
-                        var postPoint = camera.transformPoint(this);
-                        var drawX = Math.round(postPoint.x*scale);
-                        var drawY = Math.round(ctx.canvas.height - (postPoint.y+this.height)*scale);
-                        ctx.drawImage(this.sprites, spriteCoord.x*this.width*scale, spriteCoord.y*this.height*scale,
-                                        this.width*scale, this.height*scale, drawX, drawY, 
-                                        this.width*scale, this.height*scale);
-                };
         }
 
         var entities = {};
 
-        //entity classes start here
+        /* entity classes start here
+         * Each entity should have certain methods and attributes:
+         * 
+         * 
+         *
+         */
         entities.player = function(x, y, keyboard) {
                 this.inherit = EntityCommon;
                 this.inherit(x, y);
+
                 this.keyboard = keyboard;
                 this.onGround = true;
-                this.vx = 0;
-                this.vy = 0;
                 this.MAX_JUMPS = 1;
 
                 this.animationState = "standcenter";
-                this.animationFrame = 0;
                 this.spriteCoord = this.getSpriteCoord();              
  
                 this.midairJumps = this.MAX_JUMPS;
@@ -78,7 +75,7 @@ function getEntityFactory(attributes, constants, audioManager) {
                 this.getPhysicsSnapshot = function() {
                         return {
                                 "onGround" : this.onGround,
-                                "midairJump" : this.midairJumps,
+                                "midairJumps" : this.midairJumps,
                                 "x" : this.x,
                                 "y" : this.y,
                                 "vx" : this.vx,
