@@ -251,7 +251,21 @@ function getEntityFactory(attributes, constants, audioManager) {
                 this.animationState = "standcenter";
                 this.animationFrame = 0;
 
-                this.step = function() { return; };
+                this.step = function() { 
+                        if (this.animationFrame > 9) {
+                                switch(this.animationState) {
+                                        case "standcenter" :
+                                                this.animationState = "standright";
+                                                break;
+                                        case "standright" :
+                                                this.animationState = "standleft";
+                                                break;
+                                        case "standleft" :
+                                                this.animationState = "standright";
+                                                break;
+                                }
+                        }
+                }
         }
         //entity classes end here
 
