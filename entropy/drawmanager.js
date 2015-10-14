@@ -35,8 +35,9 @@ DrawManager.prototype.drawEntity = function(entity) {
 
         // Location of sprite to draw on spritesheet, (0, 0) is tl corner.
         // Integer coordinates correspond to the various sprites.
-        var spriteCoordX = entity.spriteCoord.x * entity.width * this.SCALE;
-        var spriteCoordY = entity.spriteCoord.y * entity.height * this.SCALE;
+        var spriteCoord = entity.getSpriteCoord();
+        var spriteCoordX = spriteCoord.x * entity.width * this.SCALE;
+        var spriteCoordY = spriteCoord.y * entity.height * this.SCALE;
 
         this.cvm.drawSprite(entity.sprites, spriteCoordX, spriteCoordY,
                         entity.width*this.SCALE, entity.height*this.SCALE,

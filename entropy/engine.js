@@ -13,6 +13,7 @@ var activeRoom;
 
 var exitZones = [];
 var camera;
+var roomEntities;
 
 function start() {
         var initialWorld = info.worlds[info.dicts.constants.STARTING_WORLD_ID];
@@ -57,6 +58,14 @@ function enterRoom(room, zone) {
 
         player.x = zone.bl.x;
         player.y = zone.bl.y;
+        
+        roomEntities = {};
+        roomEntities["player"] = player;
+        for (entityInstanceId in room.entities) {
+                var inst = room.entities[entityInstanceId];
+                var entity = new info.entities[inst.entityId](inst.x, inst.y, inst.z);
+                roomEntities[entityInstanceId] = entity;
+        }
 
         exitZones = [];
 
@@ -83,8 +92,12 @@ function enterRoom(room, zone) {
 }
 
 function step() {
-        player.step();
+        // Naive physics simulation(no collisions) + animation updates
+        for (entity in roomEntities) {
+                roomEntities[entity].step();
+        }
 
+        // Collision detection and handling
         var collisions = getCollisions(activeRoom.tileBoxes);
         handleCollisions(collisions);
 
@@ -96,12 +109,17 @@ function step() {
                 }
         }
 
+        // Update Camera
         camera.updateCenter();
 
+        // Render frame
         info.draw.startFrame();
-        info.draw.drawEntity(player);
+        for (entity in roomEntities) {
+                info.draw.drawEntity(roomEntities[entity]);
+        }
         info.draw.endFrame();
 
+        // Call next frame
         if (animationId != undefined) {
                 animationId = window.requestAnimationFrame(step);
         }
