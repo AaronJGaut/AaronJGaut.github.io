@@ -759,5 +759,4 @@ function startGame() {
 }
 
 load();
-
 }

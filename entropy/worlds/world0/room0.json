@@ -1,5 +1,6 @@
 {
         "entities" : {
+
                 "mob1" : {
                         "entityId" : "mob",
                         "x" : 1.1,

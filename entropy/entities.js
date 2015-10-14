@@ -1,8 +1,12 @@
 function getEntityFactory(attributes, constants, audioManager) {
-        function EntityCommon(x, y) {
+        function EntityCommon(x, y, z) {
                 
                 this.x = x;
                 this.y = y;
+                
+                if (z !== undefined) {
+                        this.zIndex = z;
+                }
 
                 this.getBox = function() {
                         return {
@@ -60,7 +64,7 @@ function getEntityFactory(attributes, constants, audioManager) {
         var entities = {};
 
         //entity classes start here
-        entities.player = function(x, y, keyboard) {
+        entities.player = function(x, y, keyboard, z) {
                 this.inherit = EntityCommon;
                 this.inherit(x, y);
                 this.keyboard = keyboard;
@@ -69,9 +73,12 @@ function getEntityFactory(attributes, constants, audioManager) {
                 this.vy = 0;
                 this.MAX_JUMPS = 1;
 
+                if (this.zLevel !== undefined) {
+                        this.zLevel = z;
+                }
+
                 this.animationState = "standcenter";
                 this.animationFrame = 0;
-                this.spriteCoord = this.getSpriteCoord();              
  
                 this.midairJumps = this.MAX_JUMPS;
 
@@ -208,7 +215,6 @@ function getEntityFactory(attributes, constants, audioManager) {
                         this.lastInput = keyInput;
                 
                         this.determineAnimationState();
-                        this.spriteCoord = this.getSpriteCoord();
                         
                         this.onGround = false;
                 }
@@ -244,7 +250,7 @@ function getEntityFactory(attributes, constants, audioManager) {
                 }
         };
 
-        entities.mob = function(x, y) {
+        entities.goomba = function(x, y) {
                 this.inherit = EntityCommon;
                 this.inherit(x, y);
                 
@@ -277,3 +283,20 @@ function getEntityFactory(attributes, constants, audioManager) {
 
         return entities;
 }
+
+
+myId = "player";
+
+
+entities[myId] 
+
+
+
+
+
+
+
+
+
+
+

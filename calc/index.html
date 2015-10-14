@@ -1,0 +1,31 @@
+<head>
+</head>
+<body>
+<input id="in" type="text"/>
+<button id="inbutton">Calculate!</button>
+<br/>
+Your value: <span id="out"></span>
+<script>
+var intext = document.getElementById("in");
+var inbutton = document.getElementById("inbutton");
+var outspan = document.getElementById("out");
+
+inbutton.onclick = function() {
+        var inputText = intext.value;
+        //inputText = inputText.replace(/[^\+-*\/0-9]/g,"")
+        try {
+                myVal = eval(inputText);
+                if (typeof(myVal) === typeof(3.14)) {
+                        outspan.innerHTML = eval(inputText);
+                }
+                else {
+                        outspan.innerHTML = "NaN";
+                }
+        }
+        catch (err) {
+                outspan.innerHTML = "NaN";
+        }
+}
+
+</script>
+</body>
