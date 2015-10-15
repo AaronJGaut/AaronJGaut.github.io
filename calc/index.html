@@ -1,18 +1,24 @@
 <head>
+<link type="text/css" rel="stylesheet" href="style.css" />
 </head>
 <body>
+<h2>Simple Calculator</h2>
 <input id="in" type="text"/>
-<button id="inbutton">Calculate!</button>
-<br/>
-Your value: <span id="out"></span>
+= <span id="out"></span>
+</br>
+<h4>How to use:</h4>
+<p>Type the thing you want to calculate into the text box above. The program
+will automatically calculate as you type. Legal symbols are numbers, +, -, /, *, and parenthesis.
+</p>
 <script>
 var intext = document.getElementById("in");
-var inbutton = document.getElementById("inbutton");
 var outspan = document.getElementById("out");
-
-inbutton.onclick = function() {
+var lastInput;
+window.setInterval(function() {
         var inputText = intext.value;
-        //inputText = inputText.replace(/[^\+-*\/0-9]/g,"")
+        if (inputText === lastInput) return;
+        lastInput = inputText;
+
         try {
                 myVal = eval(inputText);
                 if (typeof(myVal) === typeof(3.14)) {
@@ -25,7 +31,7 @@ inbutton.onclick = function() {
         catch (err) {
                 outspan.innerHTML = "NaN";
         }
-}
+}, 50);
 
 </script>
 </body>

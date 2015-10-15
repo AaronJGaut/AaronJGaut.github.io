@@ -264,6 +264,10 @@ function getEntityFactory(attributes, constants, audioManager) {
                                                 this.animationState = "standright";
                                                 break;
                                 }
+                                this.animationFrame=0;
+                        }
+                        else {
+                                this.animationFrame++;
                         }
                 }
         }
@@ -277,20 +281,3 @@ function getEntityFactory(attributes, constants, audioManager) {
 
         return entities;
 }
-
-
-myId = "player";
-
-
-entities[myId] 
-
-
-
-
-
-
-
-
-
-
-
