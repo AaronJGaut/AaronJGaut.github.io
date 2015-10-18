@@ -15,31 +15,26 @@ var exitZones = [];
 var camera;
 var roomEntities;
 
+var processStack = new ProcessStack();
+
 function start() {
+        player = new info.entities.player(0, 0, input);
+        processStack = new ProcessStack();
+
+        info.ps = processStack;
+
         var initialWorld = info.worlds[info.dicts.constants.STARTING_WORLD_ID];
         var initialEntrance = initialWorld.entrances[info.dicts.constants.STARTING_ENTRANCE_ID];
-
-        player = new info.entities.player(0, 0, input);
-
+        
         enterWorld(initialWorld, initialEntrance);
-}
+        
+        processStack.push(coreStep, false);
 
-function startSteps() {
-        if (animationId === undefined) {
-                animationId = window.requestAnimationFrame(step);
-        }
+        animationId = window.requestAnimationFrame(step);
 }
-
-function stopSteps() {
-        if (animationId != undefined) {
-                window.cancelAnimationFrame(animationId);
-        }
-        animationId = undefined;
-}
-game.stop = stopSteps;
 
 function enterWorld(world, entrance) {
-        stopSteps();
+        processStack.push(function(){ return undefined; }, true);
         var room = entrance.room;
         var zone = entrance.zone;
 
@@ -49,11 +44,11 @@ function enterWorld(world, entrance) {
         info.audio.start(world.music, "music", "song");
 
         enterRoom(room, zone);
+        processStack.pop();
 }
 
 function enterRoom(room, zone) {
-        stopSteps();
-
+        processStack.push(function() { return undefined; }, true);
         activeRoom = room;
 
         player.x = zone.bl.x;
@@ -88,10 +83,18 @@ function enterRoom(room, zone) {
 
         info.draw.initRoom(room, camera);
 
-        startSteps();
+        processStack.pop();
 }
 
 function step() {
+        processStack.step();        
+        // Call next frame
+        if (animationId != undefined) {
+                animationId = window.requestAnimationFrame(step);
+        }
+}
+
+function coreStep() {
         // Naive physics simulation(no collisions) + animation updates
         for (entity in roomEntities) {
                 roomEntities[entity].step();
@@ -119,10 +122,6 @@ function step() {
         }
         info.draw.endFrame();
 
-        // Call next frame
-        if (animationId != undefined) {
-                animationId = window.requestAnimationFrame(step);
-        }
 }
 
 function getCollisions(boxes) {
