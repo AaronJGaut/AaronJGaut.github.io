@@ -15,7 +15,26 @@ var exitZones = [];
 var camera;
 var roomEntities;
 
-var processStack = new ProcessStack();
+var processStack;
+
+var debugPause = false;
+
+function _debugPause() {
+        if (!debugPause) {
+                processStack.push(function() { return undefined; }, true, 0, 0);
+                debugPause = true;
+        }
+}
+
+function _debugResume() {
+        if (debugPause) {
+                processStack.pop(0);
+                debugPause = false;
+        }
+}
+
+game.pause = _debugPause;
+game.resume = _debugResume;
 
 function start() {
         player = new info.entities.player(0, 0, input);
@@ -28,13 +47,13 @@ function start() {
         
         enterWorld(initialWorld, initialEntrance);
         
-        processStack.push(coreStep, false);
+        processStack.push(coreStep, false, 0, 0);
 
         animationId = window.requestAnimationFrame(step);
 }
 
 function enterWorld(world, entrance) {
-        processStack.push(function(){ return undefined; }, true);
+        processStack.push(function(){ return undefined; }, true, 0, 0);
         var room = entrance.room;
         var zone = entrance.zone;
 
@@ -44,11 +63,11 @@ function enterWorld(world, entrance) {
         info.audio.start(world.music, "music", "song");
 
         enterRoom(room, zone);
-        processStack.pop();
+        processStack.pop(0);
 }
 
 function enterRoom(room, zone) {
-        processStack.push(function() { return undefined; }, true);
+        processStack.push(function() { return undefined; }, true, 0, 0);
         activeRoom = room;
 
         player.x = zone.bl.x;
@@ -83,15 +102,13 @@ function enterRoom(room, zone) {
 
         info.draw.initRoom(room, camera);
 
-        processStack.pop();
+        processStack.pop(0);
 }
 
 function step() {
-        processStack.step();        
+        processStack.call();        
         // Call next frame
-        if (animationId != undefined) {
-                animationId = window.requestAnimationFrame(step);
-        }
+        animationId = window.requestAnimationFrame(step);
 }
 
 function coreStep() {
