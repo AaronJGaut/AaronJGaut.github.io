@@ -9,9 +9,9 @@
         "CAMERA_WIDTH" : 20,
         "CAMERA_HEIGHT" : 13,
         "CAMERA_VX_FACTOR" : 30,
-        "CAMERA_VY_FACTOR" : 30,
+        "CAMERA_VY_FACTOR" : 15,
         "CAMERA_X_DESIRE_WEIGHT" : 0.04,
-        "CAMERA_Y_DESIRE_WEIGHT" : 0.04,
+        "CAMERA_Y_DESIRE_WEIGHT" : 0.08,
 
         "DIV_ID" : "gamediv",
         "CANVAS_LAYERS" : 6,

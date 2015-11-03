@@ -38,6 +38,7 @@ game.resume = _debugResume;
 
 function start() {
         player = new info.entities.player(0, 0, input);
+        game.player = player;
         processStack = new ProcessStack();
 
         info.ps = processStack;
@@ -45,33 +46,35 @@ function start() {
         var initialWorld = info.worlds[info.dicts.constants.STARTING_WORLD_ID];
         var initialEntrance = initialWorld.entrances[info.dicts.constants.STARTING_ENTRANCE_ID];
         
-        enterWorld(initialWorld, initialEntrance);
+        enterWorld(initialWorld, initialEntrance, {"bl" : {"x":0, "y":0}, "tr" : {"x":0, "y":0}});
         
         processStack.push(coreStep, false, 0, 0);
 
         animationId = window.requestAnimationFrame(step);
 }
 
-function enterWorld(world, entrance) {
+function enterWorld(world, entrance, exitZone) {
         processStack.push(function(){ return undefined; }, true, 0, 0);
         var room = entrance.room;
-        var zone = entrance.zone;
+        var enterZone = entrance.zone;
 
         activeWorld = world;
         
         info.draw.initWorld(world.background, world.tilesheet);
         info.audio.start(world.music, "music", "song");
 
-        enterRoom(room, zone);
+        enterRoom(room, enterZone, exitZone);
         processStack.pop(0);
 }
 
-function enterRoom(room, zone) {
+function enterRoom(room, enterZone, exitZone) {
         processStack.push(function() { return undefined; }, true, 0, 0);
         activeRoom = room;
 
-        player.x = zone.bl.x;
-        player.y = zone.bl.y;
+        var newCoords = calcTransferCoords(player.getBox(), exitZone, enterZone);
+
+        player.x = newCoords.x;
+        player.y = newCoords.y;
         
         roomEntities = {};
         roomEntities["player"] = player;
@@ -233,7 +236,7 @@ function WorldExit(exit, zone) {
         this.zone = zone;
         this.exit = exit;
         this.onCollide = function() {
-                enterWorld(this.exit.world, this.exit.entrance);        
+                enterWorld(this.exit.world, this.exit.entrance, this.zone);        
         }
 }
 
@@ -241,8 +244,49 @@ function RoomExit(exit, zone) {
         this.zone = zone;
         this.exit = exit;
         this.onCollide = function() {
-                enterRoom(this.exit.room, this.exit.zone);
+                enterRoom(this.exit.room, this.exit.zone, this.zone);
         }
+}
+
+function calcTransferCoords(playerRect, exitRect, enterRect) {
+        //Determines the player's bottom-left corner after passing through an exit zone
+        var leftOffset = playerRect.bl.x - exitRect.bl.x;
+        if (leftOffset < 0) leftOffset = 0;
+
+        var rightOffset = exitRect.tr.x - playerRect.tr.x;
+        if (rightOffset < 0) rightOffset = 0;
+
+        var exitFreedomX = leftOffset + rightOffset;
+        var positionRatioX = exitFreedomX > 0 ? leftOffset/exitFreedomX : 0.5;
+
+        var downOffset = playerRect.bl.y - exitRect.bl.y;
+        if (downOffset < 0) downOffset = 0;
+
+        var upOffset = exitRect.tr.y - playerRect.tr.y;
+        if (upOffset < 0) upOffset = 0;
+
+        var exitFreedomY = downOffset + upOffset;
+        var positionRatioY = exitFreedomY > 0 ? downOffset/exitFreedomY : 0.5;
+
+        var newCoords = {};
+
+        var enterFreedomX = enterRect.tr.x - enterRect.bl.x - (playerRect.tr.x - playerRect.bl.x);
+        if (enterFreedomX > 0) {
+                newCoords.x = enterRect.bl.x + enterFreedomX*positionRatioX;
+        }
+        else {
+                newCoords.x = (enterRect.bl.x + enterRect.tr.x)/2 - (playerRect.tr.x - playerRect.bl.x)/2;
+        }
+
+        var enterFreedomY = enterRect.tr.y - enterRect.bl.y - (playerRect.tr.y - playerRect.bl.y);
+        if (enterFreedomY > 0) {
+                newCoords.y = enterRect.bl.y + enterFreedomY*positionRatioY;
+        }
+        else {
+                newCoords.y = (enterRect.bl.y + enterRect.tr.y)/2 - (playerRect.tr.y - playerRect.bl.y)/2;
+        }
+        
+        return newCoords;
 }
 
 start();

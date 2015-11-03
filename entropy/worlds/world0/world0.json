@@ -4,7 +4,7 @@
 
         "music" : "cave1",
         
-        "rooms" : ["0", "1", "2"],
+        "rooms" : ["0", "1", "2", "3"],
         
         "entrances" : {
                 "initial" : {
@@ -37,6 +37,10 @@
                         "room" : "0",
                         "zone" : "eastEnter1"
                 },
+                "1,northExit0" : {
+                        "room" : "3",
+                        "zone" : "southEnter0"
+                },
                 "1,eastExit0" : {
                         "room" : "2",
                         "zone" : "westEnter0"
@@ -48,6 +52,10 @@
                 "2,eastExit0" : {
                         "room" : "0",
                         "zone" : "westEnter0"
+                },
+                "3,southExit0" : {
+                        "room" : "1",
+                        "zone" : "northEnter0"
                 }
         }
 }
