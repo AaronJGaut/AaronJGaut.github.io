@@ -5,7 +5,7 @@ function KeyboardInterface(keybind) {
         
         this.reset = function(){
                 this.states.left = false;
-                this.states.right = false;
+                this.states.right = true;
                 this.states.up = false;
                 this.states.down = false;
                 this.states.jump = false;
