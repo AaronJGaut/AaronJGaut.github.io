@@ -17,8 +17,8 @@ function getCameraFactory(constants) {
         
         function Camera(room, player) {
                 this.center = {};
-                this.center.x = player.x + VX_FACTOR*player.vx + player.width/2;
-                this.center.y = player.y + VY_FACTOR*player.vy + player.height/2;
+                this.center.x = player.x + player.width/2;
+                this.center.y = player.y + player.height/2;
                 
                 if (room.width < constants.CAMERA_WIDTH || room.height < constants.CAMERA_HEIGHT) {
                         //if room is too small, enter free mode

@@ -23,5 +23,7 @@
         "DEFAULT_MASTER_GAIN" : 0.5,
         "DEFAULT_MUSIC_GAIN" : 0.5,
         "DEFAULT_SOUND_GAIN" : 0.5,
-        "AUDIO_EXTS" : ["ogg", "mp3"]
+        "AUDIO_EXTS" : ["ogg", "mp3"],
+
+        "ROOM_PADDING" : 2
 }

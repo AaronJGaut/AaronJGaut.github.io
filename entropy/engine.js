@@ -11,9 +11,12 @@ var input = new KeyboardInterface(info.dicts.defaultKeybind);
 var activeWorld;
 var activeRoom;
 
-var exitZones = [];
+var exitZones;
 var camera;
 var roomEntities;
+var roomTiles;
+var collisionDict;
+var roomBounds;
 
 var processStack;
 
@@ -75,7 +78,8 @@ function enterRoom(room, enterZone, exitZone) {
 
         player.x = newCoords.x;
         player.y = newCoords.y;
-        
+       
+ 
         roomEntities = {};
         roomEntities["player"] = player;
         for (entityInstanceId in room.entities) {
@@ -84,24 +88,60 @@ function enterRoom(room, enterZone, exitZone) {
                 roomEntities[entityInstanceId] = entity;
         }
 
+
         exitZones = [];
+        miscZones = [];
 
         //getting world exits
         for (zone in room.zones) {
+                var isExit = false;
                 var exit = activeWorld.exits[[room.id, room.zones[zone].id]];
-                if (exit != undefined) {
+                if (exit !== undefined) {
                         exitZones.push(new WorldExit(exit, room.zones[zone]));
+                        isExit = true;
+                }
+                
+                var exit = activeWorld.connections[[room.id, room.zones[zone].id]];
+                if (exit !== undefined) {
+                        exitZones.push(new RoomExit(exit, room.zones[zone]));
+                        isExit = true;
+                }
+
+                if (!isExit) {
+                        miscZones.push(new MiscZone(room.zones[zone]));
                 }
         }
 
-        for (zone in room.zones) {
-                var exit = activeWorld.connections[[room.id, room.zones[zone].id]];
-                if (exit != undefined) {
-                        exitZones.push(new RoomExit(exit, room.zones[zone]));
+        roomTiles = [];
+        for (var i = 0; i < room.width; i++) {
+                for (var j = 0; j < room.height; j++) {
+                        if (room.tiles[i][j] !== "empty") {
+                                roomTiles.push(new info.tiles[room.tiles[i][j]](i, j));
+                        }
                 }
+        }
+        
+        collisionDict = {};
+        for (entity in roomEntities) {
+                collisionDict["entity-"+entity] = roomEntities[entity];
+        }
+        for (var i = 0; i < exitZones.length; i++) {
+                collisionDict["exit-"+i] = exitZones[i];
+        }
+        for (var i = 0; i < miscZones.length; i++) {
+                collisionDict["zone-"+i] = miscZones[i];
+        }
+        for (var i = 0 ; i < roomTiles.length; i++) {
+                collisionDict["tile-"+i] = roomTiles[i];
         }
 
         camera = new info.camera(room, player);
+
+        var padding = info.dicts.constants.ROOM_PADDING;
+        roomBounds = {
+                "bl" : { "x" : -padding, "y" : -padding },
+                "tr" : { "x" : room.width + padding, "y" : room.height + padding }
+        };
 
         info.draw.initRoom(room, camera);
 
@@ -121,14 +161,40 @@ function coreStep() {
         }
 
         // Collision detection and handling
-        var collisions = getCollisions(activeRoom.tileBoxes);
-        handleCollisions(collisions);
+        var collider = new info.collider(roomBounds);
+        
+        // Populating the quadtree
+        for (itemId in collisionDict) {
+                if (collisionDict[itemId].getBox !== undefined) {
+                        var box = collisionDict[itemId].getBox();
+                        if (box !== null) {
+                                box.id = itemId;
+                                collider.insert(box);
+                        }
+                }
+        }
 
-        playerBox = player.getBox();
-        for (exit in exitZones) {
-                if (checkOverlap(playerBox, exitZones[exit].zone)) {
-                        exitZones[exit].onCollide();
-                        return;
+        // Getting collisions from quadtree
+        for (itemId in collisionDict) {
+                if (collisionDict[itemId].isMobile) {
+                        var collisions = collider.getCollisionsAndRemove(itemId);
+                        for (var i = 0; i < collisions.length; i++) {
+                                collisionDict[itemId].logCollision(collisionDict[collisions[i]]);
+                                collisionDict[collisions[i]].logCollision(collisionDict[itemId]);
+                        }
+                }
+        }
+
+        // Handling collisions
+        for (itemId in collisionDict) {
+                try {
+                        collisionDict[itemId].handleCollisions();
+                }
+                catch (err) {
+                        if (err === "EXIT") {
+                                break;
+                        }
+                        else throw err;
                 }
         }
 
@@ -144,108 +210,57 @@ function coreStep() {
 
 }
 
-function getCollisions(boxes) {
-        var playerBox = player.getBox();
-        
-        var collisions = [];
-
-        for (var i = 0; i < boxes.length; i++) {
-                if (checkOverlap(playerBox, boxes[i])) {
-                        collisions.push(boxes[i]);
-                }
-        }
-
-        return collisions;
-}
-
-function handleCollisions(collisions) {
-        var sideCollide = false;
-        var lastStep = player.lastStep;
-        for (var i = 0; i < collisions.length; i++) {
-                if (lastStep.y >= collisions[i].tr.y
-                && (lastStep.x < collisions[i].tr.x
-                && lastStep.x + player.width > collisions[i].bl.x)) {
-                        player.collide({
-                                "obstruct" : true,
-                                "side" : "bottom",
-                                "y" : collisions[i].tr.y
-                        });
-                        sideCollide = true;
-                }
-                else if (lastStep.y + player.height <= collisions[i].bl.y
-                && (lastStep.x < collisions[i].tr.x
-                && lastStep.x + player.width > collisions[i].bl.x)) {
-                        player.collide({
-                                "obstruct" : true,
-                                "side" : "top",
-                                "y" : collisions[i].bl.y
-                        });
-                        sideCollide = true;
-                }
-                else if (lastStep.x >= collisions[i].tr.x
-                && (lastStep.y < collisions[i].tr.y
-                && lastStep.y + player.height > collisions[i].bl.y)) {
-                        player.collide({
-                                "obstruct" : true,
-                                "side" : "left",
-                                "x" : collisions[i].tr.x
-                        });
-                        sideCollide = true;
-                }
-                else if (lastStep.x + player.width <= collisions[i].bl.x
-                && (lastStep.y < collisions[i].tr.y
-                && lastStep.y + player.height > collisions[i].bl.y)) {
-                        player.collide({
-                                "obstruct" : true,
-                                "side" : "right",
-                                "x" : collisions[i].bl.x
-                        });
-                        sideCollide = true;
-                }
-        }
-        
-        //handle corner collisions
-        if (!sideCollide) {
-                for (var i = 0; i < collisions.length; i++) {
-                        if (lastStep.y >= collisions[i].tr.y) {
-                                player.collide({
-                                        "obstruct" : true,
-                                        "side" : "bottom",
-                                        "y" : collisions[i].tr.y
-                                });
-                        }
-                        else if (lastStep.y + player.height <= collisions[i].bl.y) {
-                                player.collide({
-                                        "obstruct" : true,
-                                        "side" : "top",
-                                        "y" : collisions[i].bl.y
-                                });
-                        }
-                }
-        }
-}
-
-function checkOverlap(box1, box2) {
-        return  box1.bl.x < box2.tr.x &&
-                box1.tr.x > box2.bl.x &&
-                box1.bl.y < box2.tr.y &&
-                box1.tr.y > box2.bl.y;
-}
-
 function WorldExit(exit, zone) {
         this.zone = zone;
         this.exit = exit;
-        this.onCollide = function() {
-                enterWorld(this.exit.world, this.exit.entrance, this.zone);        
-        }
+        this.triggered = false;
+        this.logCollision = function(collision) {
+                if (collision.type === "player") {
+                       this.triggered = true; 
+                }
+        };
+        this.handleCollisions = function() {
+                if (this.triggered) {
+                        enterWorld(this.exit.world, this.exit.entrance, this.zone);        
+                        throw "EXIT";
+                }
+        };
+        this.getBox = function() {
+                return {
+                        "bl" : { "x" : this.zone.bl.x, "y" : this.zone.bl.y },
+                        "tr" : { "x" : this.zone.tr.x, "y" : this.zone.tr.y }
+                };
+        };
 }
 
 function RoomExit(exit, zone) {
         this.zone = zone;
         this.exit = exit;
-        this.onCollide = function() {
-                enterRoom(this.exit.room, this.exit.zone, this.zone);
-        }
+        this.triggered = false;
+        this.logCollision = function(collision) {
+                if (collision.type === "player") {
+                        this.triggered = true;
+                }        
+
+        };
+        this.handleCollisions = function() {
+                if (this.triggered) {
+                        enterRoom(this.exit.room, this.exit.zone, this.zone);
+                        throw "EXIT";
+                }
+        };
+        this.getBox = function() {
+                return {
+                        "bl" : { "x" : this.zone.bl.x, "y" : this.zone.bl.y },
+                        "tr" : { "x" : this.zone.tr.x, "y" : this.zone.tr.y }
+                };
+        };
+}
+
+function MiscZone(zone) {
+        this.zone = zone;
+        this.logCollision = function(collision) { return undefined; };
+        this.handleCollisions = function() { return undefined; };
 }
 
 function calcTransferCoords(playerRect, exitRect, enterRect) {

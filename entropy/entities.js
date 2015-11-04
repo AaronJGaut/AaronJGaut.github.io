@@ -53,6 +53,9 @@ function getEntityFactory(attributes, constants, audioManager) {
                                 this.animationFrame = 0;
                         }
                 };
+
+                this.logCollision = function(collision) { return undefined; };
+                this.handleCollisions = function() { return undefined; };
         }
 
         var entities = {};
@@ -211,37 +214,81 @@ function getEntityFactory(attributes, constants, audioManager) {
                         this.determineAnimationState();
                         
                         this.onGround = false;
+                        this.sideCollide = false;
+                        this.obstructCollisions = [];
                 }
 
-                this.collide = function(collision) {
-                        if (collision.obstruct) {
-                                switch (collision.side) {
-                                        case "top" :
-                                                if (this.vy > 0) {
-                                                        this.vy *= -0.4;
-                                                }
-                                                this.y = collision.y-this.height;
-                                                break;
-                                        case "bottom" :
+                this.obstruct = function(collisions) {
+                        var lastStep = this.lastStep;
+                        for (var i = 0; i < collisions.length; i++) {
+                                if (lastStep.y >= collisions[i].tr.y
+                                && (lastStep.x < collisions[i].tr.x
+                                && lastStep.x + this.width > collisions[i].bl.x)) {
+                                        this.vy = 0;
+                                        this.y = collisions[i].tr.y;
+                                        this.onGround = true;
+                                        this.midairJumps = this.MAX_JUMPS;
+                                        if (this.lastStep.y > this.y) {
+                                                audioManager.start(this.sfx.land, "sound", null);
+                                        }
+                                        this.sideCollide = true;
+                                }
+                                else if (lastStep.y + this.height <= collisions[i].bl.y
+                                && (lastStep.x < collisions[i].tr.x
+                                && lastStep.x + this.width > collisions[i].bl.x)) {
+                                        if (this.vy > 0) {
+                                                this.vy *= -0.4;
+                                        }
+                                        this.y = collisions[i].bl.y-this.height;
+                                        this.sideCollide = true;
+                                }
+                                else if (lastStep.x >= collisions[i].tr.x
+                                && (lastStep.y < collisions[i].tr.y
+                                && lastStep.y + this.height > collisions[i].bl.y)) {
+                                        this.vx = 0;
+                                        this.x = collisions[i].tr.x;
+                                        this.sideCollide = true;
+                                }
+                                else if (lastStep.x + this.width <= collisions[i].bl.x
+                                && (lastStep.y < collisions[i].tr.y
+                                && lastStep.y + this.height > collisions[i].bl.y)) {
+                                        this.vx = 0;
+                                        this.x = collisions[i].bl.x-this.width;
+                                        this.sideCollide = true;
+                                }
+                        }
+                        
+                        //handle corner collisions
+                        if (!this.sideCollide) {
+                                for (var i = 0; i < collisions.length; i++) {
+                                        if (lastStep.y >= collisions[i].tr.y) {
                                                 this.vy = 0;
-                                                this.y = collision.y;
+                                                this.y = collisions[i].tr.y;
                                                 this.onGround = true;
                                                 this.midairJumps = this.MAX_JUMPS;
                                                 if (this.lastStep.y > this.y) {
                                                         audioManager.start(this.sfx.land, "sound", null);
                                                 }
-                                                break;
-                                        case "left" :
-                                                this.vx = 0;
-                                                this.x = collision.x;
-                                                break;
-                                        case "right" :
-                                                this.vx = 0;
-                                                this.x = collision.x-this.width;
-                                                break;
+                                        }
+                                        else if (lastStep.y + this.height <= collisions[i].bl.y) {
+                                                if (this.vy > 0) {
+                                                        this.vy *= -0.4;
+                                                }
+                                                this.y = collisions[i].bl.y-this.height;
+                                        }
                                 }
                         }
                 }
+
+                this.logCollision = function(collision) {
+                        if (collision.type === "wall") {
+                                this.obstructCollisions.push(collision.getBox());
+                        }
+                };
+
+                this.handleCollisions = function() {
+                        this.obstruct(this.obstructCollisions); 
+                };
         };
 
         entities.goomba = function(x, y) {

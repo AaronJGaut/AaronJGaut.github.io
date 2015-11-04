@@ -1,8 +1,9 @@
 {
-        "class" : "player",
+        "type" : "player",
         "width" : 0.8,
         "height" : 2.0,
         "zIndex" : 4,
+        "isMobile" : true,
         "spriteCoords" : {
                 "standcenter" : [
                         {

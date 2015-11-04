@@ -37,6 +37,12 @@ var camera;
 //Stores all entity prototypes after getting info from the constants dictionary and entities folder
 var entities;
 
+//Stores all tile prototypes
+var tiles;
+
+//Stores the quadtree prototype
+var collider;
+
 //Stores info from the dictionaries folder
 var dicts = {};
 
@@ -323,7 +329,6 @@ function loadTilesFromImage(sourceImage, roomObj) {
 
         roomObj.tiles = tiles;
         roomObj.drawCoords = getDrawCoords(tiles);
-        roomObj.tileBoxes = getTileBoxes(tiles);
 
         roomObj.width = tiles.length;
         roomObj.height = tiles[0].length;
@@ -412,70 +417,6 @@ function getDrawCoords(tiles) {
                 drawTiles.push(row);
         }
         return drawTiles;
-}
-
-function getTileBoxes(tiles) {
-	/* Used to make collision detection for tiles slightly
-	 * more efficient. May be unneccessary or detrimental once
-	 * quadtree is in use.
-	 */
-
-        var isImpassible = {
-                "wall" : true
-        }
-
-        var unboxed = [];
-        for (var i = 0; i < tiles.length; i++) {
-                var col = [];
-                for (var j = 0; j < tiles[i].length; j++) {
-                        col.push(isImpassible[tiles[i][j]]);
-                }
-                unboxed.push(col);
-        }
-        
-        var boxes = [];
-       
-        for (var i = 0; i < unboxed.length; i++) {
-                for (var j = 0; j < unboxed[i].length; j++) {
-                        if (unboxed[i][j]) {
-                                var box = {
-                                        "bl" : {
-                                                "x" : i,
-                                                "y" : j
-                                        },
-                                        "tr" : {
-                                                "x" : i+1,
-                                                "y" : j+1
-                                        }
-                                };
-                                
-                                while (box.tr.x < unboxed.length && unboxed[box.tr.x][box.bl.y]) {
-                                        box.tr.x++;
-                                }
-
-                                var yCheck = true;
-                                while (yCheck) {
-                                        for (var k = box.bl.x; k < box.tr.x; k++) {
-                                                if (!unboxed[k][box.tr.y]) {
-                                                        yCheck = false;
-                                                        break;
-                                                }
-                                        }
-                                        if (yCheck) {
-                                                box.tr.y++;
-                                        }
-                                }
-
-                                for (var k = box.bl.x; k < box.tr.x; k++) {
-                                        for (var l = box.bl.y; l < box.tr.y; l++) {
-                                                unboxed[k][l] = false;
-                                        }
-                                }
-                                boxes.push(box);
-                        }
-                }
-        }
-        return boxes;
 }
 
 function loadDictionaries(text) {
@@ -652,10 +593,12 @@ function linkObjects() {
                 entityAttributes[e].sprites = entitySprites[e];
         }
         entities = getEntityFactory(entityAttributes, dicts.constants, audioManager);
-        
+        tiles = getTileFactory();
+  
         //preparing camera class
         camera = getCameraFactory(dicts.constants);
 
+        collider = getColliderFactory(dicts.constants);
 
         drawManager = new DrawManager(dicts.constants, overlay.overlay);
 }
@@ -750,9 +693,11 @@ function startGame() {
                 "worlds" : worldInfo,
                 "dicts" : dicts,
                 "entities" : entities,
+                "tiles" : tiles,
                 "camera" : camera,
                 "audio" : audioManager,
-                "draw" : drawManager
+                "draw" : drawManager,
+                "collider" : collider
         };
 	//Starts up engine.js
         game(info);
