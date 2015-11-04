@@ -3,47 +3,36 @@
 //id should be unique for each box in the tree at a given time. 
 //If not, unexpected behavior may occur.
 
-var Box = function(xbl, ybl, xtr, ytr, id) {
-        this.bl = {
-                "x" : xbl,
-                "y" : ybl
-        };
-        this.tr = {
-                "x" : xtr,
-                "y" : ytr
-        };
-        this.id = id;
-};
 
-Box.prototype.intersects = function(box) {
-        return  this.bl.x <= box.tr.x &&
-                this.tr.x >= box.bl.x &&
-                this.bl.y <= box.tr.y &&
-                this.tr.y >= box.bl.y;
-}
-
-Box.prototype.toString = function() {
-        var idStr = this.id === undefined ? "" : this.id + " = ";
-        return idStr + "bl: (" + this.bl.x + "," + this.bl.y + "), tr: (" + this.tr.x + "," + this.tr.y + ")";
-};
-
-var data = {
-        "box1" : new Box(0, 0, 10, 10, "box1"),
-        "box2" : new Box(2, 3, 7, 8, "box2"),
-        "box3" : new Box(5, 5, 6, 6, "box3"),
-        "box4" : new Box(1, 2, 3, 4, "box4"),
-        "box5" : new Box(-1, -1, 0, 0, "box5"),
-        "box6" : new Box(2, 2, 3, 3, "box6"),
-        "box7" : new Box(8, 10, 9, 11, "box7"),
-        "box8" : new Box(0, 8, 1, 9, "box8"),
-        "box9" : new Box(7, 1, 9, 4, "box9"),
-        "box10" : new Box(5, 10, 6, 11, "box10")
-}
-
-var dataBounds = new Box(-1, -1, 10, 11);
 
 function getColliderFactory(constants) {
-        function Collider(bounds, NODE_MAX, MAX_DEPTH) {
+        var Box = function(xbl, ybl, xtr, ytr, id) {
+                this.bl = {
+                        "x" : xbl,
+                        "y" : ybl
+                };
+                this.tr = {
+                        "x" : xtr,
+                        "y" : ytr
+                };
+                this.id = id;
+        };
+        Box.prototype.intersects = function(box) {
+                return  this.bl.x <= box.tr.x &&
+                        this.tr.x >= box.bl.x &&
+                        this.bl.y <= box.tr.y &&
+                        this.tr.y >= box.bl.y;
+        }
+
+        Box.prototype.toString = function() {
+                var idStr = this.id === undefined ? "" : this.id + " = ";
+                return idStr + "bl: (" + this.bl.x + "," + this.bl.y + "), tr: (" + this.tr.x + "," + this.tr.y + ")";
+        };
+       
+        var NODE_MAX = constants.QUADTREE_MAX_NODESIZE;
+        var MAX_DEPTH = constants.QUADTREE_MAX_DEPTH;
+ 
+        function Collider(bounds) {
 
                 function Node(bounds, depth) {
                         this.bounds = bounds;

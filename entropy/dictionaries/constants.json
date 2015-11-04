@@ -25,5 +25,7 @@
         "DEFAULT_SOUND_GAIN" : 0.5,
         "AUDIO_EXTS" : ["ogg", "mp3"],
 
-        "ROOM_PADDING" : 2
+        "ROOM_PADDING" : 2,
+        "QUADTREE_MAX_NODESIZE" : 8,
+        "QUADTREE_MAX_DEPTH" : 5
 }
