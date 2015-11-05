@@ -6,6 +6,10 @@
         "OVERLAY_HEIGHT" : 20,
         "PIXEL_SIZE" : 4,
 
+        "FONT_WIDTH" : 5,
+        "FONT_HEIGHT" : 5,
+        "FONT_SPACING" : 1,
+
         "CAMERA_WIDTH" : 20,
         "CAMERA_HEIGHT" : 13,
         "CAMERA_VX_FACTOR" : 30,
