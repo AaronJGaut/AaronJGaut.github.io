@@ -18,10 +18,10 @@ function getColliderFactory(constants) {
                 this.id = id;
         };
         Box.prototype.intersects = function(box) {
-                return  this.bl.x <= box.tr.x &&
-                        this.tr.x >= box.bl.x &&
-                        this.bl.y <= box.tr.y &&
-                        this.tr.y >= box.bl.y;
+                return  this.bl.x < box.tr.x &&
+                        this.tr.x > box.bl.x &&
+                        this.bl.y < box.tr.y &&
+                        this.tr.y > box.bl.y;
         }
 
         Box.prototype.toString = function() {
