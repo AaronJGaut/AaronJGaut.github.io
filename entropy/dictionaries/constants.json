@@ -27,5 +27,7 @@
 
         "ROOM_PADDING" : 2,
         "QUADTREE_MAX_NODESIZE" : 8,
-        "QUADTREE_MAX_DEPTH" : 5
+        "QUADTREE_MAX_DEPTH" : 5,
+
+        "GRAVITY" : -0.01
 }

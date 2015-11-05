@@ -141,7 +141,7 @@ function getEntityFactory(attributes, constants, audioManager) {
                         var keyInput = keyboard.getSnapshot();
 
                         //gravity
-                        this.vy -= 0.01; 
+                        this.vy += constants.GRAVITY; 
 
                         //friction
                         if (this.onGround) {
