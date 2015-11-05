@@ -131,7 +131,7 @@
         "skyblue":"#87ceeb",
         "slateblue":"#6a5acd",
         "slategray":"#708090",
-        "slategrey":"#708090"
+        "slategrey":"#708090",
         "snow":"#fffafa",
         "springgreen":"#00ff7f",
         "steelblue":"#4682b4",
@@ -145,5 +145,5 @@
         "white":"#ffffff",
         "whitesmoke":"#f5f5f5",
         "yellow":"#ffff00",
-        "yellowgreen":"#9acd32",
+        "yellowgreen":"#9acd32"
 }
