@@ -1,5 +1,11 @@
 {
         "entities" : {
+                "goomba1" : {
+                        "entityId" : "goomba",
+                        "x" : 17.1,
+                        "y" : 2.1
+                }
+        
         },
         "zones" : {
                 "southEnter0" : {

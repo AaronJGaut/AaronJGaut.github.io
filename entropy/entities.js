@@ -216,6 +216,7 @@ function getEntityFactory(attributes, constants, audioManager) {
                         this.onGround = false;
                         this.sideCollide = false;
                         this.obstructCollisions = [];
+                        this.goomba = false;
                 }
 
                 this.obstruct = function(collisions) {
@@ -284,10 +285,17 @@ function getEntityFactory(attributes, constants, audioManager) {
                         if (collision.type === "wall") {
                                 this.obstructCollisions.push(collision.getBox());
                         }
+                        if (collision.type === "goomba") {
+                                this.goomba = true;
+                                console.log("GOOMBA!");
+                        }
                 };
 
                 this.handleCollisions = function() {
                         this.obstruct(this.obstructCollisions); 
+                        if (this.goomba) {
+                                this.vy += 1;
+                        }
                 };
         };
 
@@ -324,6 +332,7 @@ function getEntityFactory(attributes, constants, audioManager) {
                 for (attr in attributes[e]) {
                         entities[e].prototype[attr] = attributes[e][attr];
                 }
+                entities[e].prototype.type = e;
         }
 
         return entities;
