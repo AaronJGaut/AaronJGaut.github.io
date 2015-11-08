@@ -1,6 +1,6 @@
-function DrawManager(constants, overlay) {
+function DrawManager(constants, textManager, overlay) {
         this.constants = constants;
-        this.cvm = new CanvasManager(constants);
+        this.cvm = new CanvasManager(constants, textManager);
         this.SCALE = constants.TILE_SIZE; 
         this.cvheight = constants.CAMERA_HEIGHT*this.SCALE + constants.OVERLAY_HEIGHT;
         this.cvwidth = constants.CAMERA_WIDTH*this.SCALE;

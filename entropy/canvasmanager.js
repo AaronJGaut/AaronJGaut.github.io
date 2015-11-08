@@ -1,8 +1,10 @@
-function CanvasManager(constants) {
+function CanvasManager(constants, textManager) {
         var div = document.getElementById(constants.DIV_ID);
         this.cvwidth = constants.CAMERA_WIDTH*constants.TILE_SIZE;
         this.cvheight = constants.CAMERA_HEIGHT*constants.TILE_SIZE + constants.OVERLAY_HEIGHT;
         
+        this.tm = textManager;        
+
         this.cvLayers = [];
         this.ctxLayers = [];
 
@@ -22,6 +24,10 @@ function CanvasManager(constants) {
                 this.cvLayers.push(cv);
                 this.ctxLayers.push(ctx);
         }
+}
+
+CanvasManager.prototype.drawText = function(text, styleId, layer, x, y) {
+        this.tm.drawText(text, styleId, this.ctxLayers[layer], x, y);
 }
 
 CanvasManager.prototype.drawSprite = function(sourceCv, sourceTlx, sourceTly, width, height, layer, destTlx, destTly) {

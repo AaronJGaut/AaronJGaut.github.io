@@ -25,7 +25,6 @@ var overlay = {};
 
 var drawManager;
 
-var desiredAudioExts = ["ogg", "mp3"];
 var audioExt;
 var audioAssets = {};
 var audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -48,6 +47,13 @@ var dicts = {};
 
 //Stores info from the worlds, backgrounds, and tilesheets folders
 var worldInfo = {};
+
+//Stores fonts for processing
+var fontSheets = {};
+var fontData = {};
+
+//Stores text styles using font w/ color
+var styles;
 
 function Coord(x, y) {
         this.x = x;
@@ -197,7 +203,7 @@ function load() {
 	 * for loading because there are some dependencies.
 	 */
         readyState = "loading1";
-        loadingCount+=6;
+        loadingCount+=7;
         
 	getTextFile("worlds/worlds.txt", loadWorlds);
         getTextFile("dictionaries/dictionaries.txt", loadDictionaries);
@@ -205,6 +211,7 @@ function load() {
         getTextFile("tilesheets/tilesheets.txt", loadTilesheets);
         getTextFile("entities/entities.txt", loadAllEntityAttributes);
 	getTextFile("overlay/overlay.txt", loadOverlayGraphics);
+        getTextFile("fonts/fonts.txt", loadAllFonts);
  
 	var loadTextReadyCheck = setInterval(function() {
                 if (readyState === "loading1" && loadingCount === 0) {
@@ -545,6 +552,46 @@ function loadEntityAttributes(text, entityId) {
         loadingCount--;
 }
 
+function loadAllFonts(text) {
+        var reader;
+        var tks;
+
+        try {
+                reader = new LineReader(text);
+                tks = reader.readTokens();
+        }
+        catch (err) {
+                var message = "Problem loading fonts/fonts.txt: " + err.message;
+                throw message;
+        }
+
+
+        loadingCount += 2*tks.length;
+
+        for (var i = 0; i < tks.length; i++) {
+                fontSheets[tks[i]] = new Image();
+                fontSheets[tks[i]].onload = function() {
+                        loadingCount--;
+                };
+                fontSheets[tks[i]].src = "fonts/" + tks[i] + ".png";
+
+                getTextFile("fonts/" + tks[i] + ".json", loadFontData, tks[i]);
+        }
+
+        loadingCount--;
+}
+
+function loadFontData(text, fontId) {
+        try {
+                fontData[fontId] = JSON.parse(text);
+        }
+        catch (err) {
+		var message = "Problem reading fonts/" + fontId +".json: " + err.message;
+		throw message;
+        }
+        loadingCount--;
+}
+
 function linkObjects() {
 	/* Where ids are used as dict values, such
 	 * as in entrances and tilesheets, this function
@@ -600,7 +647,12 @@ function linkObjects() {
 
         collider = getColliderFactory(dicts.constants);
 
-        drawManager = new DrawManager(dicts.constants, overlay.overlay);
+        for (f in fontData) {
+                fontData[f].image = fontSheets[f];
+        }
+        var textManager = new TextManager(dicts.textStyles, fontData, dicts.cssColors);
+
+        drawManager = new DrawManager(dicts.constants, textManager, overlay.overlay);
 }
 
 function loadOverlayGraphics(text) {
@@ -697,7 +749,8 @@ function startGame() {
                 "camera" : camera,
                 "audio" : audioManager,
                 "draw" : drawManager,
-                "collider" : collider
+                "collider" : collider,
+                "textStyles" : styles
         };
 	//Starts up engine.js
         game(info);
