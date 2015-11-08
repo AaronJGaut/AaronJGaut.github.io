@@ -48,9 +48,6 @@ function TextManager(styles, fonts, colorDict) {
                 styleCtx.putImageData(styleData, 0, 0);
                
                 var test = styleCtx.getImageData(0, 0, styleCv.width, styleCv.height);
-                for (var i = 0 ; i < 40; i++) {
-                        console.log(test.data[i]);
-                }
  
                 var styleObj = {};
                 styleObj.sheet = styleCv;
@@ -73,16 +70,15 @@ function TextManager(styles, fonts, colorDict) {
         this.drawText = function(text, styleId, targetCtx, tlx, tly) {
                 var style = this.styles[styleId];
 
-                tlx += style.padding;
-                tly += style.padding;
+                tlx = Math.round(tlx + style.padding);
+                tly = Math.round(tly + style.padding);
+                
                 for (var i = 0; i < text.length; i++) {
                         var coord = style.coords[text[i]];
                         if (coord !== undefined) {
                                 var x = coord.x * style.width;
                                 var y = coord.y * style.height;
                                 
-                                console.log("drawing for " + text[i]);                                
-
                                 targetCtx.drawImage(style.sheet, x, y, style.width, style.height,
                                                     tlx, tly, style.width, style.height);
                                 tlx += style.width + style.spacing;
