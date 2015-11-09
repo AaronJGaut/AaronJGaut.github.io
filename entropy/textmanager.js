@@ -6,7 +6,6 @@ function TextManager(styles, fonts, colorDict) {
         for (styleId in styles) {
                 // Building styles from font and color data
                 var font = fonts[styles[styleId].font];
-                console.log(font);
                 // Handles the case where the given color is a 3-byte rgb hex value / string representation
                 var colorHex = parseInt(styles[styleId].color);
                 if (isNaN(colorHex)) {
