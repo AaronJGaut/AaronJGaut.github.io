@@ -74,14 +74,15 @@ function TextManager(styles, fonts, colorDict) {
                 
                 for (var i = 0; i < text.length; i++) {
                         var coord = style.coords[text[i]];
-                        if (coord !== undefined) {
-                                var x = coord.x * style.width;
-                                var y = coord.y * style.height;
-                                
-                                targetCtx.drawImage(style.sheet, x, y, style.width, style.height,
-                                                    tlx, tly, style.width, style.height);
-                                tlx += style.width + style.spacing;
+                        if (coord === undefined) {
+                                coord = style.coords["missing"];
                         }
+                        var x = coord.x * style.width;
+                        var y = coord.y * style.height;
+                        
+                        targetCtx.drawImage(style.sheet, x, y, style.width, style.height,
+                                            tlx, tly, style.width, style.height);
+                        tlx += style.width + style.spacing;
                 }
         }
 }
