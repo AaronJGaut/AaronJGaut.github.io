@@ -192,7 +192,7 @@ function getEntityFactory(attributes, constants, audioManager) {
                         if (keyInput.right && !keyInput.left) {
                                 if (this.onGround) {
                                         if (keyInput.action1) {
-                                                this.vx += 0.5;
+                                                this.vx += 0.1;
                                         } else {
                                                 this.vx += 0.055;
                                         }
