@@ -1,1 +1,1 @@
-font5x5
+smallfont
