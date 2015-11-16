@@ -1,0 +1,521 @@
+<html>
+<head>
+    <script type="text/javascript" src="fishbot.js"></script>
+    <link type="text/css" rel="stylesheet" href="fishbot.css"/>
+    <title>Aaron's Webzone - Fishbots</title>
+</head>
+<body>
+    <div id="gameholder" class="smooshedgameholder">
+        <a href="javascript:toggle_sidebar()" id="sidebarbutton">Sidebar</a>
+    </div>
+    <div id="sidebar" class="active">
+    <div id="sbinterior">
+        <div id="sbheader">
+            <a id="sbcontrolhead" class="headinactive" href="javascript:show_tab('sbcontrol')">Control</a>
+            <a id="sbstatshead" class="headinactive" href="javascript:show_tab('sbstats')">Stats</a>
+            <a id="sbfilehead" class"headinactive" href="javascript:show_tab('sbfile')">File</a>
+            <a id="sbupdateshead" class"headinactive" href="javascript:show_tab('sbupdates')">Updates</a>
+            <a id="sbinfohead" class"headactive" href="javascript:show_tab('sbinfo')">Info</a>
+        </div>
+        <div id="sbbody">
+            <div id="sbcontrol" class="inactive">
+                <button type="button" onclick="update_control()">Update</button>
+                <button type="button" id="pausebutton" onclick="toggle_pause()">Pause</button>
+                
+                <h3>Sizes</h3>
+                <div class="controlfield">
+                Bot Radius: <input type="text" id="botradius">
+                </div>
+
+                <div class="controlfield">
+                Food Radius: <input type="text" id="foodradius">
+                </div>
+
+                <h3>Physics</h3>
+                <div class="controlfield">
+                Linear Friction: <input type="text" id="linearfriction">
+                </div>
+
+                <div class="controlfield">
+                Radial Friction: <input type="text" id="radialfriction">
+                </div>
+
+                <div class="controlfield">
+                Linear Impulse: <input type="text" id="linearimpulse">
+                </div>
+
+                <div class="controlfield">
+                Radial Impulse: <input type="text" id="radialimpulse">
+                </div>
+
+                <div class="controlfield">
+                Braking Rate: <input type="text" id="brakingrate">
+                </div>
+           
+                <h3>Food Spawning</h3> 
+                <div class="controlfield">
+                Initial Food: <input type="text" id="initialfood">
+                </div>
+
+                <div class="controlfield">
+                Respawn Style: 
+                Constant<input type="radio" onclick="update_food_spawn_relative_field(false)" name="relativefoodspawn" id="foodspawnconstant">
+                Reactive<input type="radio" onclick="update_food_spawn_relative_field(true)" name="relativefoodspawn" id="foodspawnreactive">
+                </div>
+ 
+                <div class="controlfield" id="fooddelaybox">
+                Food Delay: <input type="text" id="fooddelay">
+                </div>
+
+                <div class="controlfield" id="foodbatchsizebox">
+                Batch Size: <input type="text" id="foodbatchsize">
+                </div>
+
+                <h3>Vision</h3>
+                <div class="controlfield">
+                Fog Distance: <input type="text" id="fogdistance">
+                </div>
+
+                <div class="controlfield">
+                Vision Distance: <input type="text" id="visiondistance">
+                </div>
+
+                <div class="controlfield">
+                Center Vision Width: <input type="text" id="centervisionwidth">
+                </div>
+
+                <div class="controlfield">
+                Side Vision Width: <input type="text" id="sidevisionwidth">
+                </div>
+
+                <div class="controlfield">
+                Side Vision Placement: <input type="text" id="sidevisionplacement">
+                </div>
+
+                <h3>Constitution</h3>
+                <div class="controlfield">
+                Food Value: <input type="text" id="foodvalue">
+                </div>
+
+                <div class="controlfield">
+                Initial Hunger: <input type="text" id="initialhunger">
+                </div>
+
+                <div class="controlfield">
+                Max Hunger: <input type="text" id="maxhunger">
+                </div>
+
+                <div class="controlfield">
+                Hunger Drain: <input type="text" id="hungerdrain">
+                </div>
+
+                <div class="controlfield">
+                Initial Health: <input type="text" id="initialhealth">
+                </div>
+
+                <div class="controlfield">
+                Max Health: <input type="text" id="maxhealth">
+                </div>
+
+                <div class="controlfield">
+                Health Drain: <input type="text" id="healthdrain">
+                </div>
+
+                <div class="controlfield">
+                Heal Threshold: <input type="text" id="healthreshold">
+                </div>
+
+                <div class="controlfield">
+                Health Recovery: <input type="text" id="healthrecovery">
+                </div>
+
+                <h3>Population</h3>
+                <div class="controlfield">
+                Population Size: <input type="text" id="populationsize">
+                </div>
+
+                <div class="controlfield">
+                Reproducers: <input type="text" id="reproducerssize">
+                </div>
+                
+                <div class="controlfield">
+                Minimum Timeout: <input type="text" id="mintimeout">
+                </div>
+
+                <div class="controlfield">
+                Change Timeout: <input type="text" id="changetimeout">
+                </div>
+
+                <div class="controlfield">
+                Fast Selection:
+                On<input onclick="update_fast_selection_field(true)" type="radio" name="fastselection" id="fastselectionyes">
+                Off<input onclick="update_fast_selection_field(false)" type="radio" name="fastselection" id="fastselectionno">
+                </div>
+
+                <h3>Brain</h3>
+                <div class="controlfield">
+                Conditions: <input type="text" id="conditions">
+                </div>
+
+                <div class="controlfield">
+                Maximum Subconditions: <input type="text" id="maxsubconditions">
+                </div>
+
+                <div class="controlfield">
+                Subcondition Activation Rate: <input type="text" id="subconditionactivationrate">
+                </div>
+
+                <h3>Reproduction</h3>
+                <div class="controlfield">
+                Use Crossover:
+                Yes<input onclick="update_use_crossover_field(true)" type="radio" name="usecrossover" id="usecrossoveryes">
+                No<input onclick="update_use_crossover_field(false)" type="radio" name="usecrossover" id="usecrossoverno">
+                </div>
+
+                <div class="controlfield" id="crossoverratebox">
+                Crossover Rate: <input type="text" id="crossoverrate">
+                </div>
+
+                <div class="controlfield">
+                Condition Mutation Rate: <input type="text" id="conditionmutationrate">
+                </div>
+
+                <div class="controlfield">
+                Subcondition Mutation Rate: <input type="text" id="subconditionmutationrate">
+                </div>
+
+                <div class="controlfield">
+                Subcondition Tweak Rate: <input type="text" id="subconditiontweakrate">
+                </div>
+
+                <div class="controlfield">
+                Action Mutation Rate: <input type="text" id="actionmutationrate">
+                </div>
+
+                <div class="controlfield">
+                Swap Mutation Rate: <input type="text" id="swapmutationrate">
+                </div>
+
+                <div class="controlfield">
+                Flagellum Mutation Rate: <input type="text" id="flagmutationrate">
+                </div>
+
+                <div class="controlfield">
+                Max Flagellum Placement Mutation: <input type="text" id="flagplacementmutationmax">
+                </div>
+
+                <div class="controlfield">
+                Max Flagellum Tilt Mutation: <input type="text" id="flagtiltmutationmax">
+                </div>
+
+                <h3>Framerate</h3>
+                <div class="controlfield">
+                Step Rate: <input type="text" id="steprate">
+                </div>
+
+                <div class="controlfield">
+                Render Rate: <input type="text" id="renderrate">
+                </div>
+
+            </div>
+            <div id="sbstats" class="inactive">
+                <h1>Coming soon!</h1>
+            </div>
+            <div id="sbfile" class="inactive">
+            </div>
+            <div id="sbupdates" class="inactive">
+                <h3>v1.2 - July 15, 2015</h3>
+                <ul>
+                <li>The field of view of each eye is now visible</li>
+                </ul>
+                <h3>v1.1 - June 28, 2015</h3>
+                <ul>
+                <li>Flagella can now mutate over time</li>
+                <li>For now, sexual reproduction uses only the first parent's flagella</li>
+                </ul>
+                <h3>v1.0 - June 25, 2015</h3>
+                <ul>
+                <li>Initial Release</li>
+                </ul>
+            </div>
+            <div id="sbinfo" class="active">
+                <h2>Welcome to Fishbots, your virtual aquarium!</h2>
+                <p>The behavior of your bots starts out completely
+                random, but over time they will learn to live in their environment.
+                You can tweak the physics, reproduction, and behavior of your bots under
+                the <b>Control</b> tab. How your bots live and grow is up to you.</p>
+                <h3>Constitution</h3>
+                <p>Each bot has a hunger meter that will deplete over time. A bot
+                must eat food (green dots) to maintain its hunger value. If a bot's hunger meter
+                completely depletes it will begin to lose health. If a bot runs
+                out of health it will die. The main color
+                of a bot indicates its hunger and health values: green for good constitution,
+                black for bad hunger, and red for bad health.</p>
+                <h3>Movement</h3>
+                <p>A bot uses its flagella to move around. These are the three rectangles
+                sticking out of a bot's body. Flagella light up when they are active.
+                Each bot also has a braking mechanism. The blue circle in the center of a
+                bot's body lights up when it is braking.</p>
+                <h3>Eyes</h3>
+                <p>Each bot is equipped with three
+                eyes on the front of its body. Each eye reports back the closest object it sees and how far
+                away the object is. An eye will light up with different colors for different kinds
+                of objects. Green means food, red indicates a wall, purple means another bot, and white
+                means nothing is close enough to be seen. There is also a middle range where an
+                object is seen, but is too far away to make out what kind of object it is. In this
+                case an eye will turn dark grey.</p> 
+                <h3>Other Sensors</h3>
+                <p>Here are some things a bot can detect about itself: speed, rotational
+                velocity, heading relative to direction of motion, health, and hunger.
+                Each bot is also equipped with three random number generators it may
+                consult when making decisions.</p>
+                <h3>Brain</h3>
+                <p>Coming soon!</p>
+                <h3>Reproduction</h3>
+                <p>Coming soon!</p>
+        </div>
+        </div>
+    </div>
+    </div>
+    <script>
+        var container = undefined;
+        var sidebar = undefined;
+        var sbcontrol = undefined;
+        var sbstats = undefined;
+        var sbfile = undefined;
+        var sbupdates = undefined;
+        var sbhelp = undefined;
+        var container = undefined;
+        var sidebar = undefined;
+        var game = undefined;
+        var params = undefined;
+        var activetab = undefined;
+        var paused = undefined;       
+        var pausebutton = undefined;
+
+        var readyStateCheck = setInterval(function() {
+            if (document.readyState === "complete") {
+                clearInterval(readyStateCheck);
+                
+                container = document.getElementById("gameholder");
+                sidebar = document.getElementById("sidebar");
+
+                sbcontrol = document.getElementById("sbcontrol");
+                sbstats = document.getElementById("sbstats");
+                sbfile = document.getElementById("sbfile");
+                sbupdates = document.getElementById("sbupdates");
+                sbhelp = document.getElementById("sbinfo");
+
+                sbcontrol.headerbutton = document.getElementById("sbcontrolhead");
+                sbstats.headerbutton = document.getElementById("sbstatshead");
+                sbfile.headerbutton = document.getElementById("sbfilehead");
+                sbupdates.headerbutton = document.getElementById("sbupdateshead");
+                sbinfo.headerbutton = document.getElementById("sbinfohead");
+
+                game = new evogame(container);
+                params = game.get_attributes();
+                update_control_fields(params);
+
+                activetab = sbinfo;
+                show_tab("sbinfo");
+
+                paused = false;       
+                pausebutton = document.getElementById("pausebutton"); 
+            }
+        }, 10);
+        
+        function toggle_sidebar(){
+            if (sidebar.className == "active"){
+                sidebar.className = "inactive";
+                gameholder.className = "fullgameholder";
+                
+            }
+            else if (sidebar.className == "inactive"){
+                sidebar.className = "active";
+                gameholder.className = "smooshedgameholder";
+            }
+        }
+        
+        function show_tab(tabId){
+            activetab.className = "inactive";
+            activetab.headerbutton.className = "headinactive";
+            activetab = document.getElementById(tabId);
+            activetab.className = "active";
+            activetab.headerbutton.className = "headactive";
+        }
+
+        function update_control_fields(attrs){
+            document.getElementById("steprate").value = attrs.STEP_RATE.toString();
+            document.getElementById("renderrate").value = attrs.RENDER_RATE.toString();
+            document.getElementById("botradius").value = attrs.BOT_RADIUS.toString();
+            document.getElementById("foodradius").value = attrs.FOOD_RADIUS.toString();
+            document.getElementById("conditions").value = attrs.CONDITIONS.toString();
+            document.getElementById("maxsubconditions").value = attrs.MAX_SUBCONDITIONS.toString();
+            document.getElementById("subconditionactivationrate").value = attrs.SUBCONDITION_ACTIVATION_RATE.toString();
+            document.getElementById("populationsize").value = attrs.POPULATION_SIZE.toString();
+            document.getElementById("reproducerssize").value = attrs.REPRODUCERS_SIZE.toString();
+            document.getElementById("mintimeout").value = attrs.MIN_TIMEOUT.toString();
+            document.getElementById("changetimeout").value = attrs.CHANGE_TIMEOUT.toString();
+            document.getElementById("initialfood").value = attrs.INITIAL_FOOD.toString();
+            document.getElementById("fooddelay").value = attrs.FOOD_DELAY.toString();
+            document.getElementById("foodbatchsize").value = attrs.FOOD_BATCH_SIZE.toString();
+            document.getElementById("foodvalue").value = attrs.FOOD_VALUE.toString();
+            document.getElementById("hungerdrain").value = attrs.HUNGER_DRAIN.toString();
+            document.getElementById("healthdrain").value = attrs.HEALTH_DRAIN.toString();
+            document.getElementById("maxhealth").value = attrs.MAX_HEALTH.toString();
+            document.getElementById("maxhunger").value = attrs.MAX_HUNGER.toString();
+            document.getElementById("healthreshold").value = attrs.HEAL_THRESHOLD.toString();
+            document.getElementById("healthrecovery").value = attrs.HEALTH_RECOVERY.toString();
+            document.getElementById("initialhealth").value = attrs.INITIAL_HEALTH.toString();
+            document.getElementById("initialhunger").value = attrs.INITIAL_HUNGER.toString();
+            document.getElementById("fogdistance").value = attrs.FOG_DISTANCE.toString();
+            document.getElementById("visiondistance").value = attrs.VISION_DISTANCE.toString();
+            document.getElementById("centervisionwidth").value = attrs.CENTER_VISION_WIDTH.toString();
+            document.getElementById("sidevisionwidth").value = attrs.SIDE_VISION_WIDTH.toString();
+            document.getElementById("sidevisionplacement").value = attrs.SIDE_VISION_PLACEMENT.toString();
+            document.getElementById("linearfriction").value = attrs.LINEAR_FRICTION.toString();
+            document.getElementById("radialfriction").value = attrs.RADIAL_FRICTION.toString();
+            document.getElementById("linearimpulse").value = attrs.LINEAR_IMPULSE.toString();
+            document.getElementById("radialimpulse").value = attrs.RADIAL_IMPULSE.toString();
+            document.getElementById("brakingrate").value = attrs.BRAKING_RATE.toString();
+            document.getElementById("crossoverrate").value = attrs.CROSSOVER_RATE.toString();
+            document.getElementById("conditionmutationrate").value = attrs.CONDITION_MUTATION_RATE.toString();
+            document.getElementById("subconditionmutationrate").value = attrs.SUBCONDITION_MUTATION_RATE.toString();
+            document.getElementById("subconditiontweakrate").value = attrs.SUBCONDITION_TWEAK_RATE.toString();
+            document.getElementById("actionmutationrate").value = attrs.ACTION_MUTATION_RATE.toString();
+            document.getElementById("swapmutationrate").value = attrs.SWAP_MUTATION_RATE.toString();
+            document.getElementById("flagmutationrate").value = attrs.FLAG_MUTATION_RATE.toString();
+            document.getElementById("flagplacementmutationmax").value = attrs.FLAG_PLACEMENT_MUTATION_MAX.toString();
+            document.getElementById("flagtiltmutationmax").value = attrs.FLAG_TILT_MUTATION_MAX.toString();
+        
+            update_fast_selection_field(attrs.FAST_SELECTION);
+            update_food_spawn_relative_field(attrs.FOOD_SPAWN_RELATIVE);
+            update_use_crossover_field(attrs.USE_CROSSOVER);
+        }
+        function update_food_spawn_relative_field(val){
+            if(val) {
+                document.getElementById("foodspawnreactive").checked = true;
+                document.getElementById("fooddelaybox").className = "hiddencontrolfield";
+                document.getElementById("foodbatchsizebox").className = "hiddencontrolfield";
+            }
+            else {
+                document.getElementById("foodspawnconstant").checked = true;
+                document.getElementById("fooddelaybox").className = "controlfield";
+                document.getElementById("foodbatchsizebox").className = "controlfield";
+            }
+        }
+        function update_fast_selection_field(val){
+            if(val) {
+                document.getElementById("fastselectionyes").checked = true;
+            }
+            else {
+                document.getElementById("fastselectionno").checked = true;
+            }
+        }
+        function update_use_crossover_field(val){
+            if(val) {
+                document.getElementById("usecrossoveryes").checked = true;
+                document.getElementById("crossoverratebox").className = "controlfield";
+            }
+            else {
+                document.getElementById("usecrossoverno").checked = true;
+                document.getElementById("crossoverratebox").className = "hiddencontrolfield";
+            }
+        }
+        function retrieve_control_fields(){
+            params.STEP_RATE = toNum(document.getElementById("steprate").value);
+            params.RENDER_RATE = toNum(document.getElementById("renderrate").value);
+            params.BOT_RADIUS = toNum(document.getElementById("botradius").value);
+            params.FOOD_RADIUS = toNum(document.getElementById("foodradius").value);
+            params.CONDITIONS = toNum(document.getElementById("conditions").value);
+            params.MAX_SUBCONDITIONS = toNum(document.getElementById("maxsubconditions").value);
+            params.SUBCONDITION_ACTIVATION_RATE = toNum(document.getElementById("subconditionactivationrate").value);
+            params.POPULATION_SIZE = toNum(document.getElementById("populationsize").value);
+            params.REPRODUCERS_SIZE = toNum(document.getElementById("reproducerssize").value);
+            params.MIN_TIMEOUT = toNum(document.getElementById("mintimeout").value);
+            params.CHANGE_TIMEOUT = toNum(document.getElementById("changetimeout").value);
+            params.INITIAL_FOOD = toNum(document.getElementById("initialfood").value);
+            params.FOOD_DELAY = toNum(document.getElementById("fooddelay").value);
+            params.FOOD_BATCH_SIZE = toNum(document.getElementById("foodbatchsize").value);
+            params.FOOD_VALUE = toNum(document.getElementById("foodvalue").value);
+            params.HUNGER_DRAIN = toNum(document.getElementById("hungerdrain").value);
+            params.HEALTH_DRAIN = toNum(document.getElementById("healthdrain").value);
+            params.MAX_HEALTH = toNum(document.getElementById("maxhealth").value);
+            params.MAX_HUNGER = toNum(document.getElementById("maxhunger").value);
+            params.HEAL_THESHOLD = toNum(document.getElementById("healthreshold").value);
+            params.HEALTH_RECOVERY = toNum(document.getElementById("healthrecovery").value);
+            params.INITIAL_HEALTH = toNum(document.getElementById("initialhealth").value);
+            params.INITIAL_HUNGER = toNum(document.getElementById("initialhunger").value);
+            params.FOG_DISTANCE = toNum(document.getElementById("fogdistance").value);
+            params.VISION_DISTANCE = toNum(document.getElementById("visiondistance").value);
+            params.CENTER_VISION_WIDTH = toNum(document.getElementById("centervisionwidth").value);
+            params.SIDE_VISION_WIDTH = toNum(document.getElementById("sidevisionwidth").value);
+            params.SIDE_VISION_PLACEMENT = toNum(document.getElementById("sidevisionplacement").value);
+            params.LINEAR_FRICTION = toNum(document.getElementById("linearfriction").value);
+            params.RADIAL_FRICTION = toNum(document.getElementById("radialfriction").value);
+            params.LINEAR_IMPULSE = toNum(document.getElementById("linearimpulse").value);
+            params.RADIAL_IMPULSE = toNum(document.getElementById("radialimpulse").value);
+            params.BRAKING_RATE = toNum(document.getElementById("brakingrate").value);
+            params.CROSSOVER_RATE = toNum(document.getElementById("crossoverrate").value);
+            params.CONDITION_MUTATION_RATE = toNum(document.getElementById("conditionmutationrate").value);
+            params.SUBCONDITION_MUTATION_RATE = toNum(document.getElementById("subconditionmutationrate").value);
+            params.SUBCONDITION_TWEAK_RATE = toNum(document.getElementById("subconditiontweakrate").value);
+            params.ACTION_MUTATION_RATE = toNum(document.getElementById("actionmutationrate").value);
+            params.SWAP_MUTATION_RATE = toNum(document.getElementById("swapmutationrate").value);
+            params.FLAG_MUTATION_RATE = toNum(document.getElementById("flagmutationrate").value);
+            params.FLAG_PLACEMENT_MUTATION_MAX = toNum(document.getElementById("flagplacementmutationmax").value);
+            params.FLAG_TILT_MUTATION_MAX = toNum(document.getElementById("flagtiltmutationmax").value);
+        
+            if(document.getElementById("foodspawnreactive").checked){
+                params.FOOD_SPAWN_RELATIVE = true;
+            }
+            else if (document.getElementById("foodspawnconstant").checked) {
+                params.FOOD_SPAWN_RELATIVE = false;
+            }
+            
+            if(document.getElementById("fastselectionyes").checked){
+                params.FAST_SELECTION = true;
+            }
+            else if (document.getElementById("fastselectionno").checked) {
+                params.FAST_SELECTION = false;
+            }
+            
+            if(document.getElementById("usecrossoveryes").checked){
+                params.USE_CROSSOVER = true;
+            }
+            else if (document.getElementById("usecrossoverno").checked) {
+                params.USE_CROSSOVER = false;
+            }
+        }
+
+        function toNum(numString) {
+            numString = numString.replace(/^\s\s*/, ''); 
+
+            if (numString == "") {
+                return NaN
+            }
+            else {
+                return Number(numString);
+            }
+        }
+
+        function update_control() {
+            retrieve_control_fields();
+            game.set_attributes(params);
+            params = game.get_attributes();
+            update_control_fields(params);
+        }
+
+        function toggle_pause() {
+            if (paused) {
+                game.resume();
+                pausebutton.innerHTML = "Pause"; 
+            }
+            else {
+                game.pause();
+                pausebutton.innerHTML = "Resume";
+            }
+            paused = !paused;
+        };
+    </script>
+</body>

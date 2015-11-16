@@ -1,0 +1,103 @@
+body {
+    margin:0px;
+    background-color:#000040;
+    overflow:hidden;
+}
+.fullgameholder {
+    width:100%;
+}
+.smooshedgameholder {
+    width:70%;
+}
+#sbheader {
+    width:100%;
+    margin-bottom:5px;
+}
+#sbheader a{
+    font-family:Arial;
+    font-size:15px;
+    padding-top:4px; 
+    padding-left:6px;
+    padding-right:6px;
+    padding-bottom:5px;
+    color:#ffffff;
+    text-decoration:none;
+}
+#gameholder {
+    height:100%;
+    float:left;
+}
+#sidebar {
+    width:30%;
+    float:right;
+    height:100%;
+    background-color:#303040;
+}
+#sbinterior {
+    margin:6px;
+}
+#sbbody {
+    height:80%;
+    background-color:#303080;
+    overflow:auto;
+    padding:6px;
+    margin-top:-2px;
+    color:#ffffff;
+}
+.active{
+    display:block;
+}
+.inactive{
+    display:none;
+}
+.headactive{
+    background-color:#303080;
+}
+.headinactive{
+}
+
+#sidebarbutton {
+    color:#ffffff;
+    background-color:#303080;
+    font-family:Arial;
+    font-size:15px;
+    padding:2px 5px;
+    text-decoration:none;
+    position:absolute;
+    opacity: 0.4;
+}
+#sidebarbutton:hover {
+    opacity: 1;
+}
+#sidebarbutton:active {
+    top:1px;
+}
+a:focus {
+    outline: 1px solid white;
+}
+.controlfield {
+    background-color:#804000;
+    padding:4px;
+    margin:4px;
+}
+.hiddencontrolfield{
+    background-color:#484848;
+    padding:4px;
+    margin:4px;
+}
+.controlsection{
+    border:1px solid black;
+}
+#controlheader{
+    position:absolute;
+    background-color:#303080;
+    padding:5px;
+    width:10%;
+    margin:-25px 0px 0px -5px;
+    border-style: solid;
+    border-color: #5050A0;
+    border-top:0px;
+    border-right:2px;
+    border-bottom:2px;
+    border-left:0px;
+}
