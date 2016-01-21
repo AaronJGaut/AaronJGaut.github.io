@@ -1,0 +1,33 @@
+<StatementList> --> <Trigger><StatementList> | <Exits>
+<Trigger> --> Trigger: on <Condition> -> <EffectList>
+
+<Condition> --> <OrCondition> | <Boolean>
+<OrCondition> --> <AndCondition> or <OrCondition> | <AndCondition>
+<AndCondition> --> <NotCondition> and <AndCondition> | <NotCondition>
+<NotCondition> --> not <SingleCondition> | <SingleCondition>
+<SingleCondition> --> (<OrCondition>) | <GlobalCondition> | <LocalCondition> 
+<GlobalCondition> --> <GlobalValue> <CompareOp> <Number> | death
+<GlobalValue> --> amount <TileId> in layer <Layer> | turn mod <Number>
+<LocalCondition> --> <Coords> is active
+
+<EffectList> --> <Effect>, <EffectList> | <Effect>
+<Effect> --> kill player | activate <Coords> | deactivate <Coords> |
+           | set <Coords> layer <Layer> to <TileId>
+
+<Boolean> --> true | false
+<Number> --> 0 | 1 | 2 | ... | MAX_INT
+<CompareOp> --> == | > | < | >= | <= | !=
+<TileId> --> wall | floor | ... | player
+<Layer> --> type | floorItem | item | entity
+<Coords> --> (<Number>, <Number>)
+
+<Exits> --> Exits: <ExitList>
+<ExitList> --> <Exit> <ExitList> | eps
+<Exit> --> north | south | east | west | up | down
+
+
+Example:
+Trigger: on amount boulder in layer entity == 0 -> activate(7, 12), activate(7, 13)
+Trigger: on (1, 11) is active or (23, 11) is active -> activate(30,2)
+Trigger: on not (1, 11) is active and not (23, 11) is active -> deactivate(30,2)
+Exits: north south

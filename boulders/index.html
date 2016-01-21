@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+	<link type = "text/css" rel="stylesheet" href="boulders.css"/>
+	<script type="text/javascript" src="boulders.js"></script>
+    <script type="text/javascript" src="jshashset-3.0.js"></script>
+    <script type="text/javascript" src="jshashtable-3.0.js"></script>
+    </head>
+    <body>
+    
+    <a href="..">Home</a>		
+	<div class="single">
+	    <canvas id="boulderwindow" width="970" height="554">Canvas failed to load! Html5 required.</canvas>
+            <br> 
+            <input type="button" value="+" onclick="uplevel();"/>
+            <input type="button" value="-" onclick="downlevel();"/>
+            <span id="leveltext"></span>
+            <input type="button" value="Load Level" onclick="loadlevel();"/>
+            
+        </div>
+		
+        <script>       
+            var level = 1;
+            var leveltext = document.getElementById("leveltext");
+            leveltext.innerHTML = "Level " + level
+            var canvas = document.getElementById("boulderwindow");
+            var gameInstance = new game(canvas);
+
+            uplevel = function(){
+                if (level < 2){
+                    level = level + 1;
+                    leveltext.innerHTML = "Level " + level
+                }
+            };
+
+            downlevel = function(){
+                if (level > 0){
+                    level = level - 1;
+                    leveltext.innerHTML = "Level " + level
+                }
+            };
+
+            loadlevel = function(){
+                gameInstance.loadLevel(level);
+            };
+
+        </script>
+    </body>
+</html>
