@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<head>
+        <script type="text/javascript" src="spring.js"></script>
+        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [["$", "$"]]}});</script>
+        
+        <link type="text/css" rel="stylesheet" href="style.css"/> 
+</head>
+<body>
+<a href="..">Back</a>
+<hr>
+<b>Simple Damped Spring:</b>
+<br><br>
+$mx'' + cx' + kx = 0; m,k>0; c\ge0$
+<br>
+with initial conditions,
+<br>
+$x(0) = x_0$
+<br>
+$x'(0) = v_0$
+<br><br>
+Damping type: <span id="dampingtype"></span>
+<br>
+<canvas id="springcv" width=500px height=20px>HTML5 support required</canvas>
+
+<table>
+<tr> 
+<td>Spring constant ($k$): </td>
+<td><input type="text" id="springk"></td>
+</tr>
+<tr>
+<td>Mass ($m$): </td>
+<td><input type="text" id="springm"></td>
+</tr>
+<tr> 
+<td>Coefficient of friction ($c$): </td>
+<td><input type="text" id="springc"></td>
+</tr>
+<tr>
+<td>Initial displacement from equilibrium ($x_0$): </td>
+<td><input type="text" id="springx"></td>
+</tr>
+<tr>
+<td>Initial velocity ($v_0$): </td>
+<td><input type="text" id="springv"></td>
+</tr>
+</table>
+
+<button type="button" onclick="window.updateConstants1()">Update</button>
+<hr>
+
+</body>
